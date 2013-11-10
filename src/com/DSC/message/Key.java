@@ -50,7 +50,6 @@ public class Key implements Message
 
     /**
      * 
-     * @param type
      * @param publicKey
      * @param symmetricKey
      * @param signature

@@ -58,7 +58,6 @@ public class AuthAcknowledge implements Message
 
     /**
      * 
-     * @param type
      * @param publicKey
      * @param authKey
      * @param timestamp

@@ -29,9 +29,10 @@ public interface MessageFactory
      * 
      * @param type
      * @param publicKey
+     * @param IV
      * @param other
      * @param timestamp
      * @param signature
      */
-    Message createMessage(MessageType type, String publicKey, String other, Timestamp timestamp, String signature);
+    Message createMessage(MessageType type, String publicKey, String IV, String other, Timestamp timestamp, String signature);
 }

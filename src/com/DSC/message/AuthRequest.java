@@ -44,7 +44,6 @@ public class AuthRequest implements Message
 
     /**
      * 
-     * @param type
      * @param publicKey
      * @param signature
      */

@@ -25,17 +25,17 @@ import java.sql.Timestamp;
 
 public abstract class AbstractMessageFactory implements MessageFactory
 {
-
     /**
      * 
      * @param type
      * @param publicKey
+     * @param IV
      * @param other
      * @param timestamp
      * @param signature
      * @throws IllegalArgumentException
      */
-    public Message createMessage(MessageType type, String publicKey, String other, 
+    public Message createMessage(MessageType type, String publicKey, String IV, String other, 
             Timestamp timestamp, String signature) throws IllegalArgumentException
     {
         switch (type)
@@ -49,7 +49,7 @@ public abstract class AbstractMessageFactory implements MessageFactory
             case KEY:
                 return createKey(publicKey, other, signature);
             case ENCRYPTED_MESSAGE:
-                return createEncryptedMessage(other, signature);
+                return createEncryptedMessage(IV, other, signature);
             default:
                 throw new IllegalArgumentException("Invalid message type!");
         }
@@ -57,7 +57,6 @@ public abstract class AbstractMessageFactory implements MessageFactory
 
     /**
      * 
-     * @param type
      * @param publicKey
      * @param signature
      * @throws IllegalArgumentException
@@ -76,7 +75,6 @@ public abstract class AbstractMessageFactory implements MessageFactory
 
     /**
      * 
-     * @param type
      * @param publicKey
      * @param authKey
      * @param timestamp
@@ -97,7 +95,6 @@ public abstract class AbstractMessageFactory implements MessageFactory
 
     /**
      * 
-     * @param type
      * @param publicKey
      * @param signature
      * @throws IllegalArgumentException
@@ -116,7 +113,6 @@ public abstract class AbstractMessageFactory implements MessageFactory
 
     /**
      * 
-     * @param type
      * @param publicKey
      * @param symmetricKey
      * @param signature
@@ -136,20 +132,20 @@ public abstract class AbstractMessageFactory implements MessageFactory
 
     /**
      * 
-     * @param type
+     * @param IV
      * @param message
      * @param signature
      * @throws IllegalArgumentException
      */
-    private Message createEncryptedMessage(String message, String signature) 
+    private Message createEncryptedMessage(String IV, String message, String signature) 
             throws IllegalArgumentException
     {
         /* Argument checking */
-        if (message == null || signature == null)
+        if (IV == null || message == null || signature == null)
         {
             throw new IllegalArgumentException("Invalid EncryptedMessage message arguments!"); 
         }
         
-        return new EncryptedMessage(message, signature);
+        return new EncryptedMessage(IV, message, signature);
     }
 }

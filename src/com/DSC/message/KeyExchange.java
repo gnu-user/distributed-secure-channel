@@ -44,7 +44,6 @@ public class KeyExchange implements Message
 
     /**
      * 
-     * @param type
      * @param publicKey
      * @param signature
      */

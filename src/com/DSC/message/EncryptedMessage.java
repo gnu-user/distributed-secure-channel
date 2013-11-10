@@ -24,6 +24,7 @@ package com.DSC.message;
 public class EncryptedMessage implements Message
 {
     private static final MessageType type = MessageType.ENCRYPTED_MESSAGE;
+    private final String IV;
     private final String message;
     private final String signature;
 
@@ -32,6 +33,11 @@ public class EncryptedMessage implements Message
         return EncryptedMessage.type;
     }
 
+    public String getIV()
+    {
+        return this.IV;
+    }
+    
     public String getMessage()
     {
         return this.message;
@@ -43,13 +49,14 @@ public class EncryptedMessage implements Message
     }
 
     /**
-     * 
-     * @param type
+     *
+     * @param IV
      * @param message
      * @param signature
      */
-    public EncryptedMessage(String message, String signature)
+    public EncryptedMessage(String IV, String message, String signature)
     {
+        this.IV = IV;
         this.message = message;
         this.signature = signature;
     }
