@@ -21,9 +21,11 @@
  */
 package com.DSC.utility;
 
-import java.util.concurrent.ConcurrentHashMap;
+import org.bouncycastle.crypto.params.ECPublicKeyParameters;
+import org.jgroups.Address;
 
 import com.DSC.crypto.ISAACRandomGenerator;
+import com.google.common.collect.ConcurrentHashMultiset;
 
 public abstract class ProgramState
 {
@@ -34,11 +36,13 @@ public abstract class ProgramState
     public static boolean AUTHENTICATION_DECISION;
     public static boolean AUTHENTICATION_ACKNOWLEDGE;
     public static String nick;
-    public static ConcurrentHashMap<String, String> trustedKeys;
+    public static ConcurrentHashMultiset<ECPublicKeyParameters> trustedKeys;
+    public static ConcurrentHashMultiset<Address> blacklist;
     public static String publicKey;
     public static String privateKey;
     public static String symmetricKey;
     public static String passphrase;
     public static ISAACRandomGenerator IVEngine;
+    
 
 }
