@@ -21,6 +21,7 @@
  */
 package com.DSC.utility;
 
+import org.bouncycastle.crypto.params.ECPrivateKeyParameters;
 import org.bouncycastle.crypto.params.ECPublicKeyParameters;
 import org.jgroups.Address;
 import org.jgroups.JChannel;
@@ -40,11 +41,9 @@ public abstract class ProgramState
     public static String nick;
     public static ConcurrentHashMultiset<ECPublicKeyParameters> trustedKeys;
     public static ConcurrentHashMultiset<Address> blacklist;
-    public static String publicKey;
-    public static String privateKey;
+    public static ECPublicKeyParameters publicKey;
+    public static ECPrivateKeyParameters privateKey;
     public static byte[] symmetricKey;
     public static String passphrase;
     public static ISAACRandomGenerator IVEngine;
-    
-
 }
