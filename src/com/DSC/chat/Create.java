@@ -45,6 +45,7 @@ public class Create extends CommandParser {
 		// Create the symmetric key
 		byte[] symmetricKey = new byte[16]; // 128 bit key
 		ISAACRandomGenerator isaac = new ISAACRandomGenerator(new ISAACEngine());
+		isaac.init(seed);
 		isaac.nextBytes(symmetricKey);
 		ProgramState.symmetricKey = symmetricKey;
 		
