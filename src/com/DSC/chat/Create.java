@@ -3,6 +3,9 @@ package com.DSC.chat;
 import java.security.SecureRandom;
 import java.util.regex.Pattern;
 
+import org.bouncycastle.crypto.engines.ISAACEngine;
+
+import com.DSC.crypto.ISAACRandomGenerator;
 import com.DSC.utility.ProgramState;
 
 public class Create extends CommandParser {
@@ -34,11 +37,16 @@ public class Create extends CommandParser {
 			return false;
 		}
 		
-		// TODO Create the random symmetric key (256 bit key using ISAACRandomGenerator
+		// Generate seed
+		byte[] seed = new byte[64]; // 512 bit seed 
 		SecureRandom random = new SecureRandom();
+		random.nextBytes(seed);
+
+		// Create the symmetric key
 		byte[] symmetricKey = new byte[16]; // 128 bit key
-		
-		random.nextBytes(symmetricKey);
+		ISAACRandomGenerator isaac = new ISAACRandomGenerator(new ISAACEngine());
+		isaac.nextBytes(symmetricKey);
+		ProgramState.symmetricKey = symmetricKey;
 		
 		ProgramState.passphrase = this.passphrase;
 		return true;

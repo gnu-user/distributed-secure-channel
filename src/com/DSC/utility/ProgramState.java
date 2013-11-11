@@ -42,7 +42,7 @@ public abstract class ProgramState
     public static ConcurrentHashMultiset<Address> blacklist;
     public static String publicKey;
     public static String privateKey;
-    public static String symmetricKey;
+    public static byte[] symmetricKey;
     public static String passphrase;
     public static ISAACRandomGenerator IVEngine;
     
