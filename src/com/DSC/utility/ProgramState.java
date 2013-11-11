@@ -23,6 +23,7 @@ package com.DSC.utility;
 
 import org.bouncycastle.crypto.params.ECPublicKeyParameters;
 import org.jgroups.Address;
+import org.jgroups.JChannel;
 
 import com.DSC.crypto.ISAACRandomGenerator;
 import com.google.common.collect.ConcurrentHashMultiset;
@@ -35,6 +36,7 @@ public abstract class ProgramState
     public static boolean KEY_RECEIVED;
     public static boolean AUTHENTICATION_DECISION;
     public static boolean AUTHENTICATION_ACKNOWLEDGE;
+    public static JChannel channel;
     public static String nick;
     public static ConcurrentHashMultiset<ECPublicKeyParameters> trustedKeys;
     public static ConcurrentHashMultiset<Address> blacklist;
