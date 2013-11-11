@@ -23,11 +23,13 @@ package com.DSC.message;
 
 import java.math.BigInteger;
 
+import org.bouncycastle.crypto.params.ECPublicKeyParameters;
+
 public class Key implements SecureMessage
 {
     private static final MessageType type = MessageType.KEY;
-    private final String publicKey;
-    private final String symmetricKey;
+    private final ECPublicKeyParameters publicKey;
+    private final byte[] symmetricKey;
     private final BigInteger[] signature;
 
     public MessageType getType()
@@ -35,12 +37,12 @@ public class Key implements SecureMessage
         return Key.type;
     }
 
-    public String getPublicKey()
+    public ECPublicKeyParameters getPublicKey()
     {
         return this.publicKey;
     }
 
-    public String getSymmetricKey()
+    public byte[] getSymmetricKey()
     {
         return this.symmetricKey;
     }
@@ -56,7 +58,7 @@ public class Key implements SecureMessage
      * @param symmetricKey
      * @param signature
      */
-    public Key(String publicKey, String symmetricKey, BigInteger[] signature)
+    public Key(ECPublicKeyParameters publicKey, byte[] symmetricKey, BigInteger[] signature)
     {
         this.publicKey = publicKey;
         this.symmetricKey = symmetricKey;

@@ -23,10 +23,12 @@ package com.DSC.message;
 
 import java.math.BigInteger;
 
+import org.bouncycastle.crypto.params.ECPublicKeyParameters;
+
 public class AuthRequest implements SecureMessage
 {
     private static final MessageType type = MessageType.AUTH_REQUEST;
-    private final String publicKey;
+    private final ECPublicKeyParameters publicKey;
     private final BigInteger[] signature;
 
     public MessageType getType()
@@ -34,7 +36,7 @@ public class AuthRequest implements SecureMessage
         return AuthRequest.type;
     }
 
-    public String getPublicKey()
+    public ECPublicKeyParameters getPublicKey()
     {
         return this.publicKey;
     }
@@ -49,7 +51,7 @@ public class AuthRequest implements SecureMessage
      * @param publicKey
      * @param signature
      */
-    public AuthRequest(String publicKey, BigInteger[] signature)
+    public AuthRequest(ECPublicKeyParameters publicKey, BigInteger[] signature)
     {
         this.publicKey = publicKey;
         this.signature = signature;

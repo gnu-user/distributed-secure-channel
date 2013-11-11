@@ -23,7 +23,9 @@ package com.DSC.message;
 
 import java.math.BigInteger;
 
-public abstract class AbstractMessageFactory implements MessageFactory
+import org.bouncycastle.crypto.params.ECPublicKeyParameters;
+
+public abstract class AbstractMessageFactory
 {
     /**
      * 
@@ -35,8 +37,8 @@ public abstract class AbstractMessageFactory implements MessageFactory
      * @param signature
      * @throws IllegalArgumentException
      */
-    public SecureMessage createMessage(MessageType type, String publicKey, String IV, String other, 
-            BigInteger[] signature) throws IllegalArgumentException
+    public static SecureMessage createMessage(MessageType type, ECPublicKeyParameters publicKey, String IV, Object other, 
+            BigInteger[] signature) throws IllegalArgumentException, ClassCastException
     {
         switch (type)
         {
@@ -61,7 +63,7 @@ public abstract class AbstractMessageFactory implements MessageFactory
      * @param signature
      * @throws IllegalArgumentException
      */
-    private static SecureMessage createAuthRequest(String publicKey, BigInteger[] signature)
+    private static SecureMessage createAuthRequest(ECPublicKeyParameters publicKey, BigInteger[] signature)
             throws IllegalArgumentException
     {
         /* Argument checking */
@@ -81,8 +83,8 @@ public abstract class AbstractMessageFactory implements MessageFactory
      * @param signature
      * @throws IllegalArgumentException
      */
-    private static SecureMessage createAuthAcknowledge(String publicKey, String authKey, BigInteger[] signature) 
-            throws IllegalArgumentException
+    private static SecureMessage createAuthAcknowledge(ECPublicKeyParameters publicKey, Object authKey, BigInteger[] signature) 
+            throws IllegalArgumentException, ClassCastException
     {
         /* Argument checking */
         if (publicKey == null || authKey == null || signature == null)
@@ -90,7 +92,7 @@ public abstract class AbstractMessageFactory implements MessageFactory
             throw new IllegalArgumentException("Invalid AuthAcknowledge message arguments!"); 
         }
         
-        return new AuthAcknowledge(publicKey, authKey, signature);
+        return new AuthAcknowledge(publicKey, (ECPublicKeyParameters)authKey, signature);
     }
 
     /**
@@ -99,7 +101,7 @@ public abstract class AbstractMessageFactory implements MessageFactory
      * @param signature
      * @throws IllegalArgumentException
      */
-    private static SecureMessage createKeyExchange(String publicKey, BigInteger[] signature) 
+    private static SecureMessage createKeyExchange(ECPublicKeyParameters publicKey, BigInteger[] signature) 
             throws IllegalArgumentException
     {
         /* Argument checking */
@@ -118,8 +120,8 @@ public abstract class AbstractMessageFactory implements MessageFactory
      * @param signature
      * @throws IllegalArgumentException
      */
-    private static SecureMessage createKey(String publicKey, String symmetricKey, BigInteger[] signature) 
-            throws IllegalArgumentException
+    private static SecureMessage createKey(ECPublicKeyParameters publicKey, Object symmetricKey, BigInteger[] signature) 
+            throws IllegalArgumentException, ClassCastException
     {
         /* Argument checking */
         if (publicKey == null || symmetricKey == null || signature == null)
@@ -127,7 +129,7 @@ public abstract class AbstractMessageFactory implements MessageFactory
             throw new IllegalArgumentException("Invalid AuthRequest message arguments!"); 
         }
         
-        return new Key(publicKey, symmetricKey, signature);
+        return new Key(publicKey, (byte[])symmetricKey, signature);
     }
 
     /**
@@ -137,8 +139,8 @@ public abstract class AbstractMessageFactory implements MessageFactory
      * @param signature
      * @throws IllegalArgumentException
      */
-    private static SecureMessage createEncryptedMessage(String IV, String message, BigInteger[] signature) 
-            throws IllegalArgumentException
+    private static SecureMessage createEncryptedMessage(String IV, Object message, BigInteger[] signature) 
+            throws IllegalArgumentException, ClassCastException
     {
         /* Argument checking */
         if (IV == null || message == null || signature == null)
@@ -146,6 +148,6 @@ public abstract class AbstractMessageFactory implements MessageFactory
             throw new IllegalArgumentException("Invalid EncryptedMessage message arguments!"); 
         }
         
-        return new EncryptedMessage(IV, message, signature);
+        return new EncryptedMessage(IV, (String)message, signature);
     }
 }
