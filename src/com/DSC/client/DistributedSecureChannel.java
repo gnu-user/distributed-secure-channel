@@ -24,11 +24,15 @@ package com.DSC.client;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
-import com.DSC.controller.*;
-import com.DSC.utility.ProgramState;
-
 import org.jgroups.JChannel;
-import org.jgroups.Message;
+
+import com.DSC.chat.CommandParser;
+import com.DSC.chat.Create;
+import com.DSC.chat.Nick;
+import com.DSC.chat.Quit;
+import com.DSC.chat.Request;
+import com.DSC.controller.ReceiveController;
+import com.DSC.utility.ProgramState;
 
 public class DistributedSecureChannel
 {
@@ -58,22 +62,73 @@ public class DistributedSecureChannel
             {
                 System.out.flush();
                 System.out.print("> ");
-                String line = in.readLine().toLowerCase();
+                String line = in.readLine();
                 
-                if (line.startsWith("/quit"))
+                if (CommandParser.isCommand(line))
                 {
-                    if (ProgramState.channel != null)
-                    {
-                        ProgramState.channel.close();
-                    }
-                    break;
-                }
-                else if (line.startsWith("/create"))
-                {
-                    // Create the random symmetric key (256 bit key using ISAACRandomGenerator
-                    // Set the channel passphrase
-                    // Join the channel
-                    join("channel name");
+                	Nick nick;
+                	Quit quit;
+                	Create create;
+                	Request request;
+                	
+                	if ((nick = Nick.parse(line)) != null)
+	                {
+                		nick.executeCommand();
+                		System.out.println("> User nick changed to " + nick.getNick());
+	                }
+                	else if ((quit = Quit.parse(line)) != null)
+                	{
+            			// Returns false if the state was null.
+            			quit.executeCommand();
+ 	                    break;
+                	}
+                	else if ((create = Create.parse(line)) != null)
+	                {
+                		System.out.print("> Enter the channel name: ");
+                		String channelName = in.readLine();
+                		System.out.print("> Enter the channel passphrase: ");
+                		String passphrase = in.readLine();
+                		create.setChannel(channelName);
+                		create.setPassphrase(passphrase);
+                		
+                		if (create.executeCommand())
+                		{
+                			join(channelName);                		
+                			System.out.println("> Channel " + channelName + " created.");
+                		}
+                		else
+                		{
+                			System.out.println("> Channel " + channelName + " has failed to create");
+                		}
+	                    
+	                }
+                	else if ((request = Request.parse(line)) != null)
+	                {
+                		System.out.print("> Enter the channel to request access: ");
+                		String channelName = in.readLine();
+                		System.out.print("> Enter authentication: ");
+                		String passphrase = in.readLine();
+                		request.setChannel(channelName);
+                		request.setPassphrase(passphrase);
+                		
+                		if (request.executeCommand())
+                		{
+                		
+	                		System.out.println("> Signing key...");
+	                		//TODO sign key
+	                		
+	                		System.out.println("> Requesting access...");
+	                		//TODO request access (with timeout)
+	                		
+	                		
+		                    
+		                    join("channel name");
+                		}
+                		else
+                		{
+                			System.out.println("> Invalid channel name");
+                		}
+	                }
                 }
                 else
                 {
@@ -98,6 +153,7 @@ public class DistributedSecureChannel
         // Initialize ISAACRandomGenerator, set ProgramState.IVEngine
         // Start eventloop
         receiveController = new ReceiveController();
+        new DistributedSecureChannel().eventLoop();
     }
 
 }
