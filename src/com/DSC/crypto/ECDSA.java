@@ -30,9 +30,7 @@ public abstract class ECDSA
         System.arraycopy(_passphrase, 0, data, _pubKey.length, _passphrase.length);
         
         /* Sign the data, return the signature */
-        ECDSASigner ecdsa = new ECDSASigner();
-        ecdsa.init(true, priKey);
-        return ecdsa.generateSignature(data);
+        return sign(priKey, data);
     }
     
     /**
@@ -57,9 +55,7 @@ public abstract class ECDSA
         System.arraycopy(_passphrase, 0, data, _pubKey.length, _passphrase.length);
         
         /* Verify the data, return true if the signature is valid, false otherwise */
-        ECDSASigner ecdsa = new ECDSASigner();
-        ecdsa.init(false, pubKey);
-        return ecdsa.verifySignature(data, signature[0], signature[1]);
+        return verify(pubKey, data, signature);
     }
     
     /**
@@ -70,7 +66,7 @@ public abstract class ECDSA
      * @param passphrase The passphrase used to sign the authentication acknowledge
      * @return The signature of the public key authentication request
      */
-    public static BigInteger[] signAuthRequest(CipherParameters priKey, CipherParameters pubKey, 
+    public static BigInteger[] signAuthAcknowledge(CipherParameters priKey, CipherParameters pubKey, 
             CipherParameters authKey, String passphrase)
     {
         ECKeyParam param = new ECKeyParam();
@@ -87,6 +83,7 @@ public abstract class ECDSA
         System.arraycopy(_passphrase, 0, data, _pubKey.length + _authKey.length, _passphrase.length);
         
         /* Sign the data, return the signature */
+        return sign(priKey, data);
 
     }
     
@@ -97,7 +94,7 @@ public abstract class ECDSA
      * @param passphrase The passphrase used to sign the authentication acknowledge
      * @return The signature of the public key authentication request
      */
-    public static boolean signAuthRequest(CipherParameters pubKey, CipherParameters authKey, 
+    public static boolean verifyAuthAcknowledge(CipherParameters pubKey, CipherParameters authKey, 
             String passphrase, BigInteger[] signature)
     {
         ECKeyParam param = new ECKeyParam();
@@ -114,15 +111,33 @@ public abstract class ECDSA
         System.arraycopy(_passphrase, 0, data, _pubKey.length + _authKey.length, _passphrase.length);
         
         /* Sign the data, return the signature */
-        ECDSASigner ecdsa = new ECDSASigner();
-        ecdsa.init(true, priKey);
-        return ecdsa.generateSignature(data);
+        return verify(pubKey, data, signature);
     }
     
+    /**
+     * 
+     * @param priKey
+     * @param data
+     * @return
+     */
     private static BigInteger[] sign(CipherParameters priKey, byte[] data)
     {
         ECDSASigner ecdsa = new ECDSASigner();
         ecdsa.init(true, priKey);
         return ecdsa.generateSignature(data);
+    }
+    
+    /**
+     * 
+     * @param pubKey
+     * @param data
+     * @param signature
+     * @return
+     */
+    private static boolean verify(CipherParameters pubKey, byte[] data, BigInteger[] signature)
+    {
+        ECDSASigner ecdsa = new ECDSASigner();
+        ecdsa.init(false, pubKey);
+        return ecdsa.verifySignature(data, signature[0], signature[1]);
     }
 }
