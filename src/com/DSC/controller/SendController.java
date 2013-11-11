@@ -24,6 +24,7 @@ package com.DSC.controller;
 import java.math.BigInteger;
 
 import org.jgroups.Address;
+import org.jgroups.Message;
 
 import com.DSC.crypto.ECDSA;
 import com.DSC.message.*;
@@ -76,8 +77,9 @@ public class SendController
 
     /**
      * Handles sending authentication requests 
+     * @throws Exception 
      */
-    private void authRequestHandler()
+    private void authRequestHandler() throws Exception
     {
         /* Generate the signature for the message */
         BigInteger[] signature = ECDSA.signAuthRequest(
@@ -86,12 +88,16 @@ public class SendController
                 ProgramState.passphrase);
         
         /* Create an authentication request message */
-        AbstractMessageFactory.createMessage(
+        SecureMessage secureMsg = AbstractMessageFactory.createMessage(
                 MessageType.AUTH_REQUEST, 
                 ProgramState.publicKey, 
                 null, 
                 null, 
-                signature);                
+                signature);  
+        
+        /* Send the message using Jgroups */
+        Message msg = new Message(null, null, secureMsg);
+        ProgramState.channel.send(msg);
     }
 
     /**
