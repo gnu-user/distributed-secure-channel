@@ -5,7 +5,7 @@
 
 # Ignore backup files
 *.*~
-*~
+*~*
 *.swp
 
 
