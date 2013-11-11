@@ -21,6 +21,8 @@
  */
 package com.DSC.controller;
 
+import org.jgroups.Address;
+
 import com.DSC.message.*;
 
 public class SendController
@@ -31,9 +33,28 @@ public class SendController
      * @param type
      * @param msg
      */
-    public void send(MessageType type, String msg)
+    public void send(MessageType type, String data, Address dest)
     {
-        throw new UnsupportedOperationException();
+        switch (type)
+        {
+            case AUTH_REQUEST:
+                authRequestHandler();
+                break;
+            case AUTH_ACKNOWLEDGE:
+                authAcknowledgeHandler(data);
+                break;
+            case KEY_EXCHANGE:
+                keyExchangeHandler();
+                break;
+            case KEY:
+                keyHandler();
+                break;
+            case ENCRYPTED_MESSAGE:
+                encryptedMessageHandler(data);
+                break;
+            default:
+                throw new IllegalArgumentException("Invalid message type!");
+        }
     }
 
     private void authRequestHandler()

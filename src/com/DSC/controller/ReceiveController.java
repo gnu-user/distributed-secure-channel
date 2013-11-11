@@ -35,7 +35,42 @@ public class ReceiveController extends ReceiverAdapter
     @Override
     public void receive(Message msg)
     {
-        throw new UnsupportedOperationException();
+        /* Attempt to cast the message type and call the appropriate handler */
+        try
+        {
+            SecureMessage secureMsg = (SecureMessage)msg.getObject();
+        
+            switch (secureMsg.getType())
+            {
+                case AUTH_REQUEST:
+                    authRequestHandler(secureMsg);
+                    break;
+                case AUTH_ACKNOWLEDGE:
+                    authAcknowledgeHandler(secureMsg);
+                    break;
+                case KEY_EXCHANGE:
+                    keyExchangeHandler(secureMsg);
+                    break;
+                case KEY:
+                    keyHandler(secureMsg);
+                    break;
+                case ENCRYPTED_MESSAGE:
+                    encryptedMessageHandler(secureMsg);
+                    break;
+                default:
+                    throw new IllegalArgumentException("Invalid message type!");
+            }
+        }
+        catch (ClassCastException ce)
+        {
+            System.err.println("Invalid message object for type provided!");
+            ce.printStackTrace();
+        }
+        catch (Exception e)
+        {
+            System.err.println("Something went terribly wrong!");
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -51,7 +86,7 @@ public class ReceiveController extends ReceiverAdapter
      * 
      * @param msg
      */
-    private void authAcknowledgeHander(SecureMessage msg)
+    private void authAcknowledgeHandler(SecureMessage msg)
     {
         throw new UnsupportedOperationException();
     }
