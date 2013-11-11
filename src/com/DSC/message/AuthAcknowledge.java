@@ -21,14 +21,11 @@
  */
 package com.DSC.message;
 
-import java.sql.Timestamp;
-
 public class AuthAcknowledge implements SecureMessage
 {
     private static final MessageType type = MessageType.AUTH_ACKNOWLEDGE;
     private final String publicKey;
     private final String authKey;
-    private final Timestamp timestamp;
     private final String signature;
 
     public MessageType getType()
@@ -46,11 +43,6 @@ public class AuthAcknowledge implements SecureMessage
         return this.authKey;
     }
 
-    public Timestamp getTimeStamp()
-    {
-        return this.timestamp;
-    }
-
     public String getSignature()
     {
         return this.signature;
@@ -63,11 +55,10 @@ public class AuthAcknowledge implements SecureMessage
      * @param timestamp
      * @param signature
      */
-    public AuthAcknowledge(String publicKey, String authKey, Timestamp timestamp, String signature)
+    public AuthAcknowledge(String publicKey, String authKey, String signature)
     {
         this.publicKey = publicKey;
         this.authKey = authKey;
-        this.timestamp = timestamp;
         this.signature = signature;
     }
 }

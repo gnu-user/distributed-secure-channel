@@ -21,8 +21,6 @@
  */
 package com.DSC.message;
 
-import java.sql.Timestamp;
-
 public abstract class AbstractMessageFactory implements MessageFactory
 {
     /**
@@ -36,14 +34,14 @@ public abstract class AbstractMessageFactory implements MessageFactory
      * @throws IllegalArgumentException
      */
     public SecureMessage createMessage(MessageType type, String publicKey, String IV, String other, 
-            Timestamp timestamp, String signature) throws IllegalArgumentException
+            String signature) throws IllegalArgumentException
     {
         switch (type)
         {
             case AUTH_REQUEST:
                 return createAuthRequest(publicKey, signature);
             case AUTH_ACKNOWLEDGE:
-                return createAuthAcknowledge(publicKey, other, timestamp, signature);
+                return createAuthAcknowledge(publicKey, other, signature);
             case KEY_EXCHANGE:
                 return createKeyExchange(publicKey, signature);
             case KEY:
@@ -81,16 +79,16 @@ public abstract class AbstractMessageFactory implements MessageFactory
      * @param signature
      * @throws IllegalArgumentException
      */
-    private SecureMessage createAuthAcknowledge(String publicKey, String authKey, Timestamp timestamp, String signature) 
+    private SecureMessage createAuthAcknowledge(String publicKey, String authKey, String signature) 
             throws IllegalArgumentException
     {
         /* Argument checking */
-        if (publicKey == null || authKey == null || timestamp == null || signature == null)
+        if (publicKey == null || authKey == null || signature == null)
         {
             throw new IllegalArgumentException("Invalid AuthAcknowledge message arguments!"); 
         }
         
-        return new AuthAcknowledge(publicKey, authKey, timestamp, signature);
+        return new AuthAcknowledge(publicKey, authKey, signature);
     }
 
     /**

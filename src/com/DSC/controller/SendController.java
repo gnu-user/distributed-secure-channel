@@ -57,9 +57,12 @@ public class SendController
         }
     }
 
+    /**
+     * Handles sending authentication requests 
+     */
     private void authRequestHandler()
     {
-        throw new UnsupportedOperationException();
+        
     }
 
     /**
