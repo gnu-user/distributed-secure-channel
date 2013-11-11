@@ -21,9 +21,13 @@
  */
 package com.DSC.controller;
 
+import java.math.BigInteger;
+
 import org.jgroups.Address;
 
+import com.DSC.crypto.ECDSA;
 import com.DSC.message.*;
+import com.DSC.utility.ProgramState;
 
 public class SendController
 {
@@ -33,27 +37,40 @@ public class SendController
      * @param type
      * @param msg
      */
-    public void send(MessageType type, String data, Address dest)
+    public void send(MessageType type, Object data, Address dest)
     {
-        switch (type)
+        try
         {
-            case AUTH_REQUEST:
-                authRequestHandler();
-                break;
-            case AUTH_ACKNOWLEDGE:
-                authAcknowledgeHandler(data);
-                break;
-            case KEY_EXCHANGE:
-                keyExchangeHandler();
-                break;
-            case KEY:
-                keyHandler();
-                break;
-            case ENCRYPTED_MESSAGE:
-                encryptedMessageHandler(data);
-                break;
-            default:
-                throw new IllegalArgumentException("Invalid message type!");
+            switch (type)
+            {
+                case AUTH_REQUEST:
+                    authRequestHandler();
+                    break;
+                case AUTH_ACKNOWLEDGE:
+                    authAcknowledgeHandler(data);
+                    break;
+                case KEY_EXCHANGE:
+                    keyExchangeHandler();
+                    break;
+                case KEY:
+                    keyHandler();
+                    break;
+                case ENCRYPTED_MESSAGE:
+                    encryptedMessageHandler(data);
+                    break;
+                default:
+                    throw new IllegalArgumentException("Invalid message type!");
+            }
+        }
+        catch (ClassCastException ce)
+        {
+            System.err.println("Invalid data type provided!");
+            ce.printStackTrace();
+        }
+        catch (Exception e)
+        {
+            System.err.println("Something went terribly wrong!");
+            e.printStackTrace();
         }
     }
 
@@ -62,14 +79,26 @@ public class SendController
      */
     private void authRequestHandler()
     {
+        /* Generate the signature for the message */
+        BigInteger[] signature = ECDSA.signAuthRequest(
+                ProgramState.privateKey, 
+                ProgramState.publicKey, 
+                ProgramState.passphrase);
         
+        /* Create an authentication request message */
+        AbstractMessageFactory.createMessage(
+                MessageType.AUTH_REQUEST, 
+                ProgramState.publicKey, 
+                null, 
+                null, 
+                signature);                
     }
 
     /**
      * 
      * @param authKey
      */
-    private void authAcknowledgeHandler(String authKey)
+    private void authAcknowledgeHandler(Object authKey)
     {
         throw new UnsupportedOperationException();
     }
@@ -88,7 +117,7 @@ public class SendController
      * 
      * @param msg
      */
-    private void encryptedMessageHandler(String msg)
+    private void encryptedMessageHandler(Object msg)
     {
         throw new UnsupportedOperationException();
     }
