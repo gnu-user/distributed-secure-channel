@@ -21,7 +21,7 @@
  */
 package com.DSC.message;
 
-public class KeyExchange implements Message
+public class KeyExchange implements SecureMessage
 {
     private static final MessageType type = MessageType.KEY_EXCHANGE;
     private final String publicKey;

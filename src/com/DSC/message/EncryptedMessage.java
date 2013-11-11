@@ -21,7 +21,7 @@
  */
 package com.DSC.message;
 
-public class EncryptedMessage implements Message
+public class EncryptedMessage implements SecureMessage
 {
     private static final MessageType type = MessageType.ENCRYPTED_MESSAGE;
     private final String IV;

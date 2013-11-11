@@ -35,7 +35,7 @@ public abstract class AbstractMessageFactory implements MessageFactory
      * @param signature
      * @throws IllegalArgumentException
      */
-    public Message createMessage(MessageType type, String publicKey, String IV, String other, 
+    public SecureMessage createMessage(MessageType type, String publicKey, String IV, String other, 
             Timestamp timestamp, String signature) throws IllegalArgumentException
     {
         switch (type)
@@ -61,7 +61,7 @@ public abstract class AbstractMessageFactory implements MessageFactory
      * @param signature
      * @throws IllegalArgumentException
      */
-    private Message createAuthRequest(String publicKey, String signature)
+    private SecureMessage createAuthRequest(String publicKey, String signature)
             throws IllegalArgumentException
     {
         /* Argument checking */
@@ -81,7 +81,7 @@ public abstract class AbstractMessageFactory implements MessageFactory
      * @param signature
      * @throws IllegalArgumentException
      */
-    private Message createAuthAcknowledge(String publicKey, String authKey, Timestamp timestamp, String signature) 
+    private SecureMessage createAuthAcknowledge(String publicKey, String authKey, Timestamp timestamp, String signature) 
             throws IllegalArgumentException
     {
         /* Argument checking */
@@ -99,7 +99,7 @@ public abstract class AbstractMessageFactory implements MessageFactory
      * @param signature
      * @throws IllegalArgumentException
      */
-    private Message createKeyExchange(String publicKey, String signature) 
+    private SecureMessage createKeyExchange(String publicKey, String signature) 
             throws IllegalArgumentException
     {
         /* Argument checking */
@@ -118,7 +118,7 @@ public abstract class AbstractMessageFactory implements MessageFactory
      * @param signature
      * @throws IllegalArgumentException
      */
-    private Message createKey(String publicKey, String symmetricKey, String signature) 
+    private SecureMessage createKey(String publicKey, String symmetricKey, String signature) 
             throws IllegalArgumentException
     {
         /* Argument checking */
@@ -137,7 +137,7 @@ public abstract class AbstractMessageFactory implements MessageFactory
      * @param signature
      * @throws IllegalArgumentException
      */
-    private Message createEncryptedMessage(String IV, String message, String signature) 
+    private SecureMessage createEncryptedMessage(String IV, String message, String signature) 
             throws IllegalArgumentException
     {
         /* Argument checking */

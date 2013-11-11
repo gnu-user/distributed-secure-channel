@@ -21,7 +21,7 @@
  */
 package com.DSC.message;
 
-public class AuthRequest implements Message
+public class AuthRequest implements SecureMessage
 {
     private static final MessageType type = MessageType.AUTH_REQUEST;
     private final String publicKey;

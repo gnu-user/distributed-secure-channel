@@ -23,7 +23,7 @@ package com.DSC.message;
 
 import java.sql.Timestamp;
 
-public class AuthAcknowledge implements Message
+public class AuthAcknowledge implements SecureMessage
 {
     private static final MessageType type = MessageType.AUTH_ACKNOWLEDGE;
     private final String publicKey;

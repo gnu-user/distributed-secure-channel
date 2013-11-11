@@ -21,7 +21,7 @@
  */
 package com.DSC.message;
 
-public class Key implements Message
+public class Key implements SecureMessage
 {
     private static final MessageType type = MessageType.KEY;
     private final String publicKey;

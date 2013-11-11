@@ -34,5 +34,5 @@ public interface MessageFactory
      * @param timestamp
      * @param signature
      */
-    Message createMessage(MessageType type, String publicKey, String IV, String other, Timestamp timestamp, String signature);
+    SecureMessage createMessage(MessageType type, String publicKey, String IV, String other, Timestamp timestamp, String signature);
 }
