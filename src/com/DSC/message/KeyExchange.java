@@ -21,11 +21,13 @@
  */
 package com.DSC.message;
 
+import java.math.BigInteger;
+
 public class KeyExchange implements SecureMessage
 {
     private static final MessageType type = MessageType.KEY_EXCHANGE;
     private final String publicKey;
-    private final String signature;
+    private final BigInteger[] signature;
 
     public MessageType getType()
     {
@@ -37,7 +39,7 @@ public class KeyExchange implements SecureMessage
         return this.publicKey;
     }
 
-    public String getSignature()
+    public BigInteger[] getSignature()
     {
         return this.signature;
     }
@@ -47,7 +49,7 @@ public class KeyExchange implements SecureMessage
      * @param publicKey
      * @param signature
      */
-    public KeyExchange(String publicKey, String signature)
+    public KeyExchange(String publicKey, BigInteger[] signature)
     {
         this.publicKey = publicKey;
         this.signature = signature;

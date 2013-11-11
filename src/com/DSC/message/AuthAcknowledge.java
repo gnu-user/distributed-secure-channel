@@ -21,12 +21,14 @@
  */
 package com.DSC.message;
 
+import java.math.BigInteger;
+
 public class AuthAcknowledge implements SecureMessage
 {
     private static final MessageType type = MessageType.AUTH_ACKNOWLEDGE;
     private final String publicKey;
     private final String authKey;
-    private final String signature;
+    private final BigInteger[] signature;
 
     public MessageType getType()
     {
@@ -43,7 +45,7 @@ public class AuthAcknowledge implements SecureMessage
         return this.authKey;
     }
 
-    public String getSignature()
+    public BigInteger[] getSignature()
     {
         return this.signature;
     }
@@ -55,7 +57,7 @@ public class AuthAcknowledge implements SecureMessage
      * @param timestamp
      * @param signature
      */
-    public AuthAcknowledge(String publicKey, String authKey, String signature)
+    public AuthAcknowledge(String publicKey, String authKey, BigInteger[] signature)
     {
         this.publicKey = publicKey;
         this.authKey = authKey;

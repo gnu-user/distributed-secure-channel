@@ -21,11 +21,13 @@
  */
 package com.DSC.message;
 
+import java.math.BigInteger;
+
 public class AuthRequest implements SecureMessage
 {
     private static final MessageType type = MessageType.AUTH_REQUEST;
     private final String publicKey;
-    private final String signature;
+    private final BigInteger[] signature;
 
     public MessageType getType()
     {
@@ -37,7 +39,7 @@ public class AuthRequest implements SecureMessage
         return this.publicKey;
     }
 
-    public String getSignature()
+    public BigInteger[] getSignature()
     {
         return this.signature;
     }
@@ -47,7 +49,7 @@ public class AuthRequest implements SecureMessage
      * @param publicKey
      * @param signature
      */
-    public AuthRequest(String publicKey, String signature)
+    public AuthRequest(String publicKey, BigInteger[] signature)
     {
         this.publicKey = publicKey;
         this.signature = signature;

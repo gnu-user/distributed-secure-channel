@@ -21,12 +21,14 @@
  */
 package com.DSC.message;
 
+import java.math.BigInteger;
+
 public class Key implements SecureMessage
 {
     private static final MessageType type = MessageType.KEY;
     private final String publicKey;
     private final String symmetricKey;
-    private final String signature;
+    private final BigInteger[] signature;
 
     public MessageType getType()
     {
@@ -43,7 +45,7 @@ public class Key implements SecureMessage
         return this.symmetricKey;
     }
 
-    public String getSignature()
+    public BigInteger[] getSignature()
     {
         return this.signature;
     }
@@ -54,7 +56,7 @@ public class Key implements SecureMessage
      * @param symmetricKey
      * @param signature
      */
-    public Key(String publicKey, String symmetricKey, String signature)
+    public Key(String publicKey, String symmetricKey, BigInteger[] signature)
     {
         this.publicKey = publicKey;
         this.symmetricKey = symmetricKey;

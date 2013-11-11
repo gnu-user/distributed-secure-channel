@@ -21,7 +21,7 @@
  */
 package com.DSC.message;
 
-import java.sql.Timestamp;
+import java.math.BigInteger;
 
 public interface MessageFactory
 {
@@ -34,5 +34,5 @@ public interface MessageFactory
      * @param timestamp
      * @param signature
      */
-    SecureMessage createMessage(MessageType type, String publicKey, String IV, String other, Timestamp timestamp, String signature);
+    public SecureMessage createMessage(MessageType type, String publicKey, String IV, String other, BigInteger[] signature);
 }

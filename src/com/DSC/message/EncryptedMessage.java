@@ -21,12 +21,14 @@
  */
 package com.DSC.message;
 
+import java.math.BigInteger;
+
 public class EncryptedMessage implements SecureMessage
 {
     private static final MessageType type = MessageType.ENCRYPTED_MESSAGE;
     private final String IV;
     private final String message;
-    private final String signature;
+    private final BigInteger[] signature;
 
     public MessageType getType()
     {
@@ -43,7 +45,7 @@ public class EncryptedMessage implements SecureMessage
         return this.message;
     }
 
-    public String getSignature()
+    public BigInteger[] getSignature()
     {
         return this.signature;
     }
@@ -54,7 +56,7 @@ public class EncryptedMessage implements SecureMessage
      * @param message
      * @param signature
      */
-    public EncryptedMessage(String IV, String message, String signature)
+    public EncryptedMessage(String IV, String message, BigInteger[] signature)
     {
         this.IV = IV;
         this.message = message;
