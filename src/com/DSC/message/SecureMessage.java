@@ -21,7 +21,7 @@
  */
 package com.DSC.message;
 
-public interface Message
+public interface SecureMessage
 {
     /**
      * Returns the type of message
