@@ -1,7 +1,6 @@
 package com.DSC.crypto;
 
 import java.math.BigInteger;
-import java.sql.Timestamp;
 
 import org.bouncycastle.crypto.CipherParameters;
 import org.bouncycastle.crypto.signers.ECDSASigner;
@@ -77,7 +76,6 @@ public abstract class ECDSA
         System.arraycopy(_passphrase, 0, data, _pubKey.length + _authKey.length, _passphrase.length);
         
         return sign(priKey, data);
-
     }
     
     /**
