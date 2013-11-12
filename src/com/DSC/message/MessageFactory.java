@@ -36,5 +36,5 @@ public interface MessageFactory
      * @param timestamp
      * @param signature
      */
-    public SecureMessage createMessage(MessageType type, ECPublicKeyParameters publicKey, String IV, String other, BigInteger[] signature);
+    public SecureMessage createMessage(MessageType type, byte[] publicKey, String IV, String other, BigInteger[] signature);
 }

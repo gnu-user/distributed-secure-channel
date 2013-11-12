@@ -37,7 +37,7 @@ public abstract class AbstractMessageFactory
      * @param signature
      * @throws IllegalArgumentException
      */
-    public static SecureMessage createMessage(MessageType type, ECPublicKeyParameters publicKey, String IV, Object other, 
+    public static SecureMessage createMessage(MessageType type, byte[] publicKey, String IV, Object other, 
             BigInteger[] signature) throws IllegalArgumentException, ClassCastException
     {
         switch (type)
@@ -63,7 +63,7 @@ public abstract class AbstractMessageFactory
      * @param signature
      * @throws IllegalArgumentException
      */
-    private static SecureMessage createAuthRequest(ECPublicKeyParameters publicKey, BigInteger[] signature)
+    private static SecureMessage createAuthRequest(byte[] publicKey, BigInteger[] signature)
             throws IllegalArgumentException
     {
         /* Argument checking */
@@ -83,7 +83,7 @@ public abstract class AbstractMessageFactory
      * @param signature
      * @throws IllegalArgumentException
      */
-    private static SecureMessage createAuthAcknowledge(ECPublicKeyParameters publicKey, Object authKey, BigInteger[] signature) 
+    private static SecureMessage createAuthAcknowledge(byte[] publicKey, Object authKey, BigInteger[] signature) 
             throws IllegalArgumentException, ClassCastException
     {
         /* Argument checking */
@@ -101,7 +101,7 @@ public abstract class AbstractMessageFactory
      * @param signature
      * @throws IllegalArgumentException
      */
-    private static SecureMessage createKeyExchange(ECPublicKeyParameters publicKey, BigInteger[] signature) 
+    private static SecureMessage createKeyExchange(byte[] publicKey, BigInteger[] signature) 
             throws IllegalArgumentException
     {
         /* Argument checking */
@@ -120,7 +120,7 @@ public abstract class AbstractMessageFactory
      * @param signature
      * @throws IllegalArgumentException
      */
-    private static SecureMessage createKey(ECPublicKeyParameters publicKey, Object symmetricKey, BigInteger[] signature) 
+    private static SecureMessage createKey(byte[] publicKey, Object symmetricKey, BigInteger[] signature) 
             throws IllegalArgumentException, ClassCastException
     {
         /* Argument checking */

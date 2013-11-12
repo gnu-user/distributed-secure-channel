@@ -28,7 +28,7 @@ import org.bouncycastle.crypto.params.ECPublicKeyParameters;
 public class AuthAcknowledge implements SecureMessage
 {
     private static final MessageType type = MessageType.AUTH_ACKNOWLEDGE;
-    private final ECPublicKeyParameters publicKey;
+    private final byte[] publicKey;
     private final ECPublicKeyParameters authKey;
     private final BigInteger[] signature;
 
@@ -37,7 +37,7 @@ public class AuthAcknowledge implements SecureMessage
         return AuthAcknowledge.type;
     }
 
-    public ECPublicKeyParameters getPublicKey()
+    public byte[] getPublicKey()
     {
         return this.publicKey;
     }
@@ -59,7 +59,7 @@ public class AuthAcknowledge implements SecureMessage
      * @param timestamp
      * @param signature
      */
-    public AuthAcknowledge(ECPublicKeyParameters publicKey, ECPublicKeyParameters authKey, BigInteger[] signature)
+    public AuthAcknowledge(byte[] publicKey, ECPublicKeyParameters authKey, BigInteger[] signature)
     {
         this.publicKey = publicKey;
         this.authKey = authKey;
