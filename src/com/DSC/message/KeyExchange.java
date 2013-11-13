@@ -21,10 +21,12 @@
  */
 package com.DSC.message;
 
+import java.io.Serializable;
 import java.math.BigInteger;
 
-public class KeyExchange implements SecureMessage
+public class KeyExchange implements SecureMessage, Serializable
 {
+    private static final long serialVersionUID = 2104788822717289658L;
     private static final MessageType type = MessageType.KEY_EXCHANGE;
     private final byte[] publicKey;
     private final BigInteger[] signature;

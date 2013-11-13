@@ -21,10 +21,12 @@
  */
 package com.DSC.message;
 
+import java.io.Serializable;
 import java.math.BigInteger;
 
-public class AuthAcknowledge implements SecureMessage
+public class AuthAcknowledge implements SecureMessage, Serializable
 {
+    private static final long serialVersionUID = 127852287918652976L;
     private static final MessageType type = MessageType.AUTH_ACKNOWLEDGE;
     private final byte[] publicKey;
     private final byte[] authKey;

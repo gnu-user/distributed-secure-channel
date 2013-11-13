@@ -21,10 +21,12 @@
  */
 package com.DSC.message;
 
+import java.io.Serializable;
 import java.math.BigInteger;
 
-public class Key implements SecureMessage
+public class Key implements SecureMessage, Serializable
 {
+    private static final long serialVersionUID = 732736483964164972L;
     private static final MessageType type = MessageType.KEY;
     private final byte[] publicKey;
     private final byte[] symmetricKey;
