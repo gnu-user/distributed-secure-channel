@@ -29,7 +29,7 @@ public class AuthAcknowledge implements SecureMessage
 {
     private static final MessageType type = MessageType.AUTH_ACKNOWLEDGE;
     private final byte[] publicKey;
-    private final ECPublicKeyParameters authKey;
+    private final byte[] authKey;
     private final BigInteger[] signature;
 
     public MessageType getType()
@@ -42,7 +42,7 @@ public class AuthAcknowledge implements SecureMessage
         return this.publicKey;
     }
 
-    public ECPublicKeyParameters getAuthKey()
+    public byte[] getAuthKey()
     {
         return this.authKey;
     }
@@ -59,7 +59,7 @@ public class AuthAcknowledge implements SecureMessage
      * @param timestamp
      * @param signature
      */
-    public AuthAcknowledge(byte[] publicKey, ECPublicKeyParameters authKey, BigInteger[] signature)
+    public AuthAcknowledge(byte[] publicKey, byte[] authKey, BigInteger[] signature)
     {
         this.publicKey = publicKey;
         this.authKey = authKey;

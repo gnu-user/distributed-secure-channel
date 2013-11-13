@@ -24,8 +24,6 @@ package com.DSC.message;
 import java.io.Serializable;
 import java.math.BigInteger;
 
-import org.bouncycastle.crypto.params.ECPublicKeyParameters;
-
 public class AuthRequest implements SecureMessage, Serializable
 {
     private static final long serialVersionUID = -2115084427555115658L;

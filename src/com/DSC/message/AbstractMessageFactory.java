@@ -92,7 +92,7 @@ public abstract class AbstractMessageFactory
             throw new IllegalArgumentException("Invalid AuthAcknowledge message arguments!"); 
         }
         
-        return new AuthAcknowledge(publicKey, (ECPublicKeyParameters)authKey, signature);
+        return new AuthAcknowledge(publicKey, (byte[])authKey, signature);
     }
 
     /**
