@@ -23,8 +23,6 @@ package com.DSC.message;
 
 import java.math.BigInteger;
 
-import org.bouncycastle.crypto.params.ECPublicKeyParameters;
-
 public abstract class AbstractMessageFactory
 {
     /**
@@ -37,7 +35,7 @@ public abstract class AbstractMessageFactory
      * @param signature
      * @throws IllegalArgumentException
      */
-    public static SecureMessage createMessage(MessageType type, byte[] publicKey, String IV, Object other, 
+    public static SecureMessage createMessage(MessageType type, byte[] publicKey, byte[] IV, Object other, 
             BigInteger[] signature) throws IllegalArgumentException, ClassCastException
     {
         switch (type)
@@ -139,7 +137,7 @@ public abstract class AbstractMessageFactory
      * @param signature
      * @throws IllegalArgumentException
      */
-    private static SecureMessage createEncryptedMessage(String IV, Object message, BigInteger[] signature) 
+    private static SecureMessage createEncryptedMessage(byte[] IV, Object message, BigInteger[] signature) 
             throws IllegalArgumentException, ClassCastException
     {
         /* Argument checking */
@@ -148,6 +146,6 @@ public abstract class AbstractMessageFactory
             throw new IllegalArgumentException("Invalid EncryptedMessage message arguments!"); 
         }
         
-        return new EncryptedMessage(IV, (String)message, signature);
+        return new EncryptedMessage(IV, (byte[])message, signature);
     }
 }

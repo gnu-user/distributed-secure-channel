@@ -26,8 +26,8 @@ import java.math.BigInteger;
 public class EncryptedMessage implements SecureMessage
 {
     private static final MessageType type = MessageType.ENCRYPTED_MESSAGE;
-    private final String IV;
-    private final String message;
+    private final byte[] IV;
+    private final byte[] message;
     private final BigInteger[] signature;
 
     public MessageType getType()
@@ -35,12 +35,12 @@ public class EncryptedMessage implements SecureMessage
         return EncryptedMessage.type;
     }
 
-    public String getIV()
+    public byte[] getIV()
     {
         return this.IV;
     }
     
-    public String getMessage()
+    public byte[] getMessage()
     {
         return this.message;
     }
@@ -56,7 +56,7 @@ public class EncryptedMessage implements SecureMessage
      * @param message
      * @param signature
      */
-    public EncryptedMessage(String IV, String message, BigInteger[] signature)
+    public EncryptedMessage(byte[] IV, byte[] message, BigInteger[] signature)
     {
         this.IV = IV;
         this.message = message;

@@ -23,8 +23,6 @@ package com.DSC.message;
 
 import java.math.BigInteger;
 
-import org.bouncycastle.crypto.params.ECPublicKeyParameters;
-
 public interface MessageFactory
 {
     /**
@@ -36,5 +34,5 @@ public interface MessageFactory
      * @param timestamp
      * @param signature
      */
-    public SecureMessage createMessage(MessageType type, byte[] publicKey, String IV, String other, BigInteger[] signature);
+    public SecureMessage createMessage(MessageType type, byte[] publicKey, byte[] IV, String other, BigInteger[] signature);
 }

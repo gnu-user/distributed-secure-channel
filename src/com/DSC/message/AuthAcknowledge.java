@@ -23,8 +23,6 @@ package com.DSC.message;
 
 import java.math.BigInteger;
 
-import org.bouncycastle.crypto.params.ECPublicKeyParameters;
-
 public class AuthAcknowledge implements SecureMessage
 {
     private static final MessageType type = MessageType.AUTH_ACKNOWLEDGE;
