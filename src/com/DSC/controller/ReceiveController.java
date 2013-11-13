@@ -24,7 +24,10 @@ package com.DSC.controller;
 import org.jgroups.Message;
 import org.jgroups.ReceiverAdapter;
 
+import com.DSC.crypto.ECDSA;
+import com.DSC.crypto.ECGKeyUtil;
 import com.DSC.message.*;
+import com.DSC.utility.ProgramState;
 
 public class ReceiveController extends ReceiverAdapter
 {
@@ -79,7 +82,22 @@ public class ReceiveController extends ReceiverAdapter
      */
     private void authRequestHandler(SecureMessage msg)
     {
-        throw new UnsupportedOperationException();
+        System.out.println("AUTHENTICATION REQUEST RECEIVED!");
+        System.out.println(ProgramState.passphrase);
+        
+        AuthRequest authRequest = (AuthRequest) msg;
+        System.out.println(authRequest.getPublicKey().toString());
+        System.out.println(authRequest.getSignature().toString());
+        
+        if (ECDSA.verifyAuthRequest(ECGKeyUtil.decodePubKey(authRequest.getPublicKey()), 
+                ProgramState.passphrase, authRequest.getSignature()))
+        {
+            System.out.println("VALID");
+        }
+        else
+        {
+            System.out.println("INVALID");
+        }
     }
 
     /**

@@ -27,6 +27,7 @@ import org.jgroups.Address;
 import org.jgroups.Message;
 
 import com.DSC.crypto.ECDSA;
+import com.DSC.crypto.ECGKeyUtil;
 import com.DSC.message.*;
 import com.DSC.utility.ProgramState;
 
@@ -82,6 +83,8 @@ public class SendController
     private void authRequestHandler() throws Exception
     {
         /* Generate the signature for the message */
+        System.out.println(ProgramState.passphrase);
+        
         BigInteger[] signature = ECDSA.signAuthRequest(
                 ProgramState.privateKey, 
                 ProgramState.publicKey, 
@@ -90,7 +93,7 @@ public class SendController
         /* Create an authentication request message */
         SecureMessage secureMsg = AbstractMessageFactory.createMessage(
                 MessageType.AUTH_REQUEST, 
-                ProgramState.publicKey, 
+                ECGKeyUtil.encodePubKey(ProgramState.publicKey), 
                 null, 
                 null, 
                 signature);  
