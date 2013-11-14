@@ -23,6 +23,7 @@ package com.DSC.controller;
 
 import java.math.BigInteger;
 
+import org.bouncycastle.crypto.params.ECPublicKeyParameters;
 import org.jgroups.Address;
 import org.jgroups.Message;
 
@@ -98,7 +99,7 @@ public class SendController
                 null, 
                 signature);  
         
-        /* Send the message using Jgroups */
+        /* Send the message using JGroups */
         Message msg = new Message(null, null, secureMsg);
         ProgramState.channel.send(msg);
     }
@@ -106,20 +107,69 @@ public class SendController
     /**
      * 
      * @param authKey
+     * @throws Exception 
      */
-    private void authAcknowledgeHandler(Object authKey)
+    private void authAcknowledgeHandler(Object authKey) throws Exception
     {
-        throw new UnsupportedOperationException();
+        /* Generate the signature for the authenticated message */
+        BigInteger[] signature = ECDSA.signAuthAcknowledge(
+                ProgramState.privateKey, 
+                ProgramState.publicKey, 
+                (ECPublicKeyParameters) authKey, 
+                ProgramState.passphrase);
+        
+        /* Create an authentication acknowledge message */
+        SecureMessage secureMsg = AbstractMessageFactory.createMessage(
+                MessageType.AUTH_ACKNOWLEDGE, 
+                ECGKeyUtil.encodePubKey(ProgramState.publicKey), 
+                null, 
+                ECGKeyUtil.encodePubKey((ECPublicKeyParameters) authKey), 
+                signature);
+        
+        /* Send the message using JGroups */
+        Message msg = new Message(null, null, secureMsg);
+        ProgramState.channel.send(msg);
     }
 
-    private void keyExchangeHandler()
+    /**
+     * @throws Exception 
+     * 
+     */
+    private void keyExchangeHandler() throws Exception
     {
-        throw new UnsupportedOperationException();
+        /* Generate the signature for the key exchange message */
+        BigInteger[] signature = ECDSA.signKeyExchange(
+                ProgramState.privateKey, 
+                ProgramState.publicKey, 
+                ProgramState.passphrase);
+        
+        /* Create a key exchange message */
+        SecureMessage secureMsg = AbstractMessageFactory.createMessage(
+                MessageType.KEY_EXCHANGE, 
+                ECGKeyUtil.encodePubKey(ProgramState.publicKey), 
+                null,
+                null, 
+                signature);
+        
+        /* Send the message using JGroups */
+        Message msg = new Message(null, null, secureMsg);
+        ProgramState.channel.send(msg);
     }
 
     private void keyHandler()
     {
-        throw new UnsupportedOperationException();
+        // Encrypt the key with the other person's public key
+        // sign the key with my private/public keypair
+        // send the ENCRYPTED key
+        /* Generate the signature for the key
+        BigInteger[] signature = ECDSA.signKey(
+                ProgramState.privateKey, 
+                ProgramState.publicKey, 
+                ProgramState.symmetricKey, 
+                ProgramState.passphrase);
+        */
+        
+        
     }
 
     /**
@@ -128,7 +178,10 @@ public class SendController
      */
     private void encryptedMessageHandler(Object msg)
     {
-        throw new UnsupportedOperationException();
+        // Generate another unique IV
+        // Encrypt the message using symmetric key and IV with GRAIN
+        // Sign the message somehow (would be nice if used grain signing support
+        // fire off the message!
     }
 
 }
