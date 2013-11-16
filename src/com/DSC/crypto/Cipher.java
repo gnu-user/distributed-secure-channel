@@ -122,7 +122,7 @@ public abstract class Cipher
      * @param IV
      * @return
      */
-    public static byte[] decrypttMsg(byte[] symmetricKey, byte[] IV, byte[] data)
+    public static byte[] decryptMsg(byte[] symmetricKey, byte[] IV, byte[] data)
     {
         byte[] cipherText = new byte[data.length];
         
