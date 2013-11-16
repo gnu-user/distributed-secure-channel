@@ -136,12 +136,16 @@ public class DistributedSecureChannel
                 	}
                 	else if ((request = Request.parse(line)) != null)
 	                {
+                		System.out.print("> Enter the channel to request access: ");
+                		String channelName = in.readLine();
                 		System.out.print("> Enter authentication: ");
                 		String passphrase = in.readLine();
+                		request.setChannel(channelName);
                 		request.setPassphrase(passphrase);
                 		
                 		if (request.executeCommand())
                 		{
+                		
 	                		System.out.println("> Signing key...");
 	                		//TODO sign key
 	                		
