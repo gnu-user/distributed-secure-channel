@@ -32,7 +32,7 @@ public abstract class AbstractMessageFactory
      * @param IV
      * @param other
      * @param timestamp
-     * @param signature
+     * @param signature ECDSA signature or Hashed based Message Authentication Code (HMAC) signature
      * @throws IllegalArgumentException
      */
     public static SecureMessage createMessage(MessageType type, byte[] publicKey, byte[] IV, Object other, 
@@ -137,15 +137,15 @@ public abstract class AbstractMessageFactory
      * @param signature
      * @throws IllegalArgumentException
      */
-    private static SecureMessage createEncryptedMessage(byte[] IV, Object message, BigInteger[] signature) 
+    private static SecureMessage createEncryptedMessage(byte[] IV, Object message, BigInteger[] HMAC) 
             throws IllegalArgumentException, ClassCastException
     {
         /* Argument checking */
-        if (IV == null || message == null || signature == null)
+        if (IV == null || message == null || HMAC == null)
         {
             throw new IllegalArgumentException("Invalid EncryptedMessage message arguments!"); 
         }
         
-        return new EncryptedMessage(IV, (byte[])message, signature);
+        return new EncryptedMessage(IV, (byte[])message, HMAC);
     }
 }

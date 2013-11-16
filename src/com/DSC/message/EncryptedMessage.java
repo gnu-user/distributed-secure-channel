@@ -30,7 +30,7 @@ public class EncryptedMessage implements SecureMessage, Serializable
     private static final MessageType type = MessageType.ENCRYPTED_MESSAGE;
     private final byte[] IV;
     private final byte[] message;
-    private final BigInteger[] signature;
+    private final BigInteger[] HMAC;
 
     public MessageType getType()
     {
@@ -47,21 +47,21 @@ public class EncryptedMessage implements SecureMessage, Serializable
         return this.message;
     }
 
-    public BigInteger[] getSignature()
+    public BigInteger[] getHMAC()
     {
-        return this.signature;
+        return this.HMAC;
     }
 
     /**
      *
      * @param IV
      * @param message
-     * @param signature
+     * @param HMAC
      */
-    public EncryptedMessage(byte[] IV, byte[] message, BigInteger[] signature)
+    public EncryptedMessage(byte[] IV, byte[] message, BigInteger[] HMAC)
     {
         this.IV = IV;
         this.message = message;
-        this.signature = signature;
+        this.HMAC = HMAC;
     }
 }
