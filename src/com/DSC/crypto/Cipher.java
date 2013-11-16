@@ -21,6 +21,9 @@
  */
 package com.DSC.crypto;
 
+import java.math.BigInteger;
+import java.util.Arrays;
+
 import org.bouncycastle.crypto.CipherParameters;
 import org.bouncycastle.crypto.InvalidCipherTextException;
 import org.bouncycastle.crypto.StreamCipher;
@@ -33,6 +36,7 @@ import org.bouncycastle.crypto.macs.HMac;
 import org.bouncycastle.crypto.params.IESParameters;
 import org.bouncycastle.crypto.params.KeyParameter;
 import org.bouncycastle.crypto.params.ParametersWithIV;
+import org.bouncycastle.util.encoders.Hex;
 
 public abstract class Cipher
 {
@@ -136,5 +140,49 @@ public abstract class Cipher
         /* Decrypt the message */
         grain.processBytes(data, 0, data.length, cipherText, 0);
         return cipherText;
+    }
+    
+    /**
+     * 
+     * @param passphrase
+     * @param data
+     * @return
+     */
+    public static BigInteger[] generateHMAC(String passphrase, byte[] data)
+    {
+       HMac hmac = new HMac(new SHA256Digest());
+       byte[] buf = new byte[hmac.getMacSize()];
+       BigInteger[] hmacBigInt = new BigInteger[1];
+       
+       /* Initializes and generate HMAC for message */
+       hmac.init(new KeyParameter(passphrase.getBytes()));
+       hmac.update(data, 0, data.length);
+       hmac.doFinal(buf, 0);
+       
+       /* Convert the HMAC to a big integer representation */
+       hmacBigInt[0] = new BigInteger(buf);
+       return hmacBigInt;
+    }
+    
+    
+    public static boolean verifyHMAC(String passphrase, BigInteger[] HMAC, byte[] data)
+    {
+        HMac hmac = new HMac(new SHA256Digest());
+        byte[] expHMAC = new byte[hmac.getMacSize()];
+        byte[] recHMAC = new byte[hmac.getMacSize()];
+        
+        /* Initializes and generate the expected HMAC for message */
+        hmac.init(new KeyParameter(passphrase.getBytes()));
+        hmac.update(data, 0, data.length);
+        hmac.doFinal(expHMAC, 0);
+        
+        /* Convert the received HMAC to a byte representation */
+        recHMAC = HMAC[0].toByteArray();
+        
+        System.out.println("HMAC EXP: " + new String(Hex.encode(expHMAC)));
+        System.out.println("HMAC REC: " + new String(Hex.encode(recHMAC)));
+        
+        /* Compare the HMAC received to the expected HMAC */
+        return Arrays.equals(expHMAC, recHMAC);
     }
 }
