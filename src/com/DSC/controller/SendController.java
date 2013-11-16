@@ -23,18 +23,21 @@ package com.DSC.controller;
 
 import java.math.BigInteger;
 
+import org.bouncycastle.crypto.InvalidCipherTextException;
 import org.bouncycastle.crypto.params.ECPublicKeyParameters;
 import org.jgroups.Address;
 import org.jgroups.Message;
 
+import com.DSC.crypto.Cipher;
 import com.DSC.crypto.ECDSA;
 import com.DSC.crypto.ECGKeyUtil;
-import com.DSC.message.*;
+import com.DSC.message.AbstractMessageFactory;
+import com.DSC.message.MessageType;
+import com.DSC.message.SecureMessage;
 import com.DSC.utility.ProgramState;
 
 public class SendController
 {
-
     /**
      * 
      * @param type
@@ -56,7 +59,7 @@ public class SendController
                     keyExchangeHandler();
                     break;
                 case KEY:
-                    keyHandler();
+                    keyHandler(data);
                     break;
                 case ENCRYPTED_MESSAGE:
                     encryptedMessageHandler(data);
@@ -156,32 +159,70 @@ public class SendController
         ProgramState.channel.send(msg);
     }
 
-    private void keyHandler()
+    /**
+     * 
+     * @param authKey
+     * @throws InvalidCipherTextException
+     * @throws Exception
+     */
+    private void keyHandler(Object authKey) throws InvalidCipherTextException, Exception
     {
-        // Encrypt the key with the other person's public key
-        // sign the key with my private/public keypair
-        // send the ENCRYPTED key
-        /* Generate the signature for the key
+        /* Encrypt the key with the other person's public key */
+        byte[] encryptedKey = Cipher.encryptKey(
+                ProgramState.publicKey, 
+                (ECPublicKeyParameters) authKey, 
+                ProgramState.passphrase, 
+                ProgramState.symmetricKey);
+        
+        /* sign the key with my private/public keypair */
         BigInteger[] signature = ECDSA.signKey(
                 ProgramState.privateKey, 
                 ProgramState.publicKey, 
-                ProgramState.symmetricKey, 
+                ProgramState.symmetricKey,
                 ProgramState.passphrase);
-        */
         
+        /* Send the ENCRYPTED key */
+        SecureMessage secureMsg = AbstractMessageFactory.createMessage(
+                MessageType.KEY, 
+                ECGKeyUtil.encodePubKey(ProgramState.publicKey), 
+                null, 
+                encryptedKey, 
+                signature);
         
+        /* Send the message using JGroups */
+        Message msg = new Message(null, null, secureMsg);
+        ProgramState.channel.send(msg);
     }
 
     /**
      * 
      * @param msg
+     * @throws Exception 
      */
-    private void encryptedMessageHandler(Object msg)
+    private void encryptedMessageHandler(Object message) throws Exception
     {
         // Generate another unique IV
+        byte[] IV = new byte[24];
+        ProgramState.IVEngine.nextBytes(IV);
+        
         // Encrypt the message using symmetric key and IV with GRAIN
-        // Sign the message somehow (would be nice if used grain signing support
+        byte[] encryptedMessage = Cipher.encryptMsg(
+                ProgramState.symmetricKey, 
+                IV, 
+                ((String) message).getBytes());
+        
+        // TODO Sign the message somehow (would be nice if used grain signing support
         // fire off the message!
+        SecureMessage secureMsg = AbstractMessageFactory.createMessage(
+                MessageType.ENCRYPTED_MESSAGE, 
+                null, 
+                IV, 
+                encryptedMessage, 
+                null);
+        
+        /* Send the message using JGroups */
+        Message msg = new Message(null, null, secureMsg);
+        ProgramState.channel.send(msg);
     }
 
 }
