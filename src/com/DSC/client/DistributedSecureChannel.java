@@ -122,7 +122,7 @@ public class DistributedSecureChannel
 	                		
 	                		
 		                    
-		                    join("channel name");
+		                    join(channelName);
                 		}
                 		else
                 		{
