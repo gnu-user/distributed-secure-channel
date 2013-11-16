@@ -24,27 +24,37 @@ package com.DSC.client;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
+import org.bouncycastle.crypto.params.ECPrivateKeyParameters;
+import org.bouncycastle.crypto.params.ECPublicKeyParameters;
+import org.jgroups.Address;
 import org.jgroups.JChannel;
 
 import com.DSC.chat.CommandParser;
 import com.DSC.chat.Create;
+import com.DSC.chat.Join;
 import com.DSC.chat.Nick;
 import com.DSC.chat.Quit;
 import com.DSC.chat.Request;
 import com.DSC.controller.ReceiveController;
+import com.DSC.controller.SendController;
+import com.DSC.crypto.ECKey;
+import com.DSC.message.MessageType;
 import com.DSC.utility.ProgramState;
+import com.google.common.collect.ConcurrentHashMultiset;
 
 public class DistributedSecureChannel
 {
     private static ReceiveController receiveController;
+    private static SendController sendController;
     
     /**
-     * 
+     *
      * @throws Exception
      */
     private void join(String name) throws Exception
     {
         ProgramState.channel = new JChannel();
+        ProgramState.channel.setDiscardOwnMessages(true);
         ProgramState.channel.setReceiver(receiveController);
         ProgramState.channel.connect(name);
     }
@@ -69,6 +79,7 @@ public class DistributedSecureChannel
                 	Nick nick;
                 	Quit quit;
                 	Create create;
+                	Join join;
                 	Request request;
                 	
                 	if ((nick = Nick.parse(line)) != null)
@@ -93,8 +104,11 @@ public class DistributedSecureChannel
                 		
                 		if (create.executeCommand())
                 		{
-                			join(channelName);                		
-                			System.out.println("> Channel " + channelName + " created.");
+                			if (ProgramState.channel == null)
+                			{
+                			    join(channelName);                		
+                			    System.out.println("> Channel " + channelName + " created.");
+                			}
                 		}
                 		else
                 		{
@@ -102,31 +116,44 @@ public class DistributedSecureChannel
                 		}
 	                    
 	                }
+                	else if ((join = Join.parse(line)) != null)
+                	{
+                        System.out.print("> Enter the channel to join: ");
+                        String channelName = in.readLine();
+                        join.setChannel(channelName);
+                        
+                        if (join.executeCommand())
+                        {                            
+                            if (ProgramState.channel == null || ! ProgramState.channel.equals(channelName))
+                            {
+                                join(channelName);
+                            }
+                        }
+                        else
+                        {
+                            System.out.println("> Invalid channel name");
+                        }
+                	}
                 	else if ((request = Request.parse(line)) != null)
 	                {
-                		System.out.print("> Enter the channel to request access: ");
-                		String channelName = in.readLine();
                 		System.out.print("> Enter authentication: ");
                 		String passphrase = in.readLine();
-                		request.setChannel(channelName);
                 		request.setPassphrase(passphrase);
                 		
                 		if (request.executeCommand())
                 		{
-                		
 	                		System.out.println("> Signing key...");
 	                		//TODO sign key
 	                		
 	                		System.out.println("> Requesting access...");
 	                		//TODO request access (with timeout)
 	                		
-	                		
-		                    
-		                    join("channel name");
+		                    // Send out the request to join
+		                    sendController.send(MessageType.AUTH_REQUEST, null, null);
                 		}
                 		else
                 		{
-                			System.out.println("> Invalid channel name");
+                			System.out.println("> An unspecified error occurred.");
                 		}
 	                }
                 }
@@ -149,10 +176,22 @@ public class DistributedSecureChannel
     public static void main(String[] args)
     {
         // Create their private & public keys
+        ECKey key = new ECKey();
+        key.init();
+        ProgramState.publicKey = (ECPublicKeyParameters) key.getPublic();
+        ProgramState.privateKey = (ECPrivateKeyParameters) key.getPrivate();
+        
+        // Create the blacklist and trusted contacts
+        ProgramState.blacklist =  ConcurrentHashMultiset.create();
+        ProgramState.trustedKeys = ConcurrentHashMultiset.create();
+        
+        
         // Set a default nick?
         // Initialize ISAACRandomGenerator, set ProgramState.IVEngine
         // Start eventloop
         receiveController = new ReceiveController();
+        sendController = new SendController();
+
         new DistributedSecureChannel().eventLoop();
     }
 
