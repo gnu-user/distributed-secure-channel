@@ -21,14 +21,14 @@
  */
 package com.DSC.message;
 
+import java.io.Serializable;
 import java.math.BigInteger;
 
-import org.bouncycastle.crypto.params.ECPublicKeyParameters;
-
-public class KeyExchange implements SecureMessage
+public class KeyExchange implements SecureMessage, Serializable
 {
+    private static final long serialVersionUID = 2104788822717289658L;
     private static final MessageType type = MessageType.KEY_EXCHANGE;
-    private final ECPublicKeyParameters publicKey;
+    private final byte[] publicKey;
     private final BigInteger[] signature;
 
     public MessageType getType()
@@ -36,7 +36,7 @@ public class KeyExchange implements SecureMessage
         return KeyExchange.type;
     }
 
-    public ECPublicKeyParameters getPublicKey()
+    public byte[] getPublicKey()
     {
         return this.publicKey;
     }
@@ -51,7 +51,7 @@ public class KeyExchange implements SecureMessage
      * @param publicKey
      * @param signature
      */
-    public KeyExchange(ECPublicKeyParameters publicKey, BigInteger[] signature)
+    public KeyExchange(byte[] publicKey, BigInteger[] signature)
     {
         this.publicKey = publicKey;
         this.signature = signature;

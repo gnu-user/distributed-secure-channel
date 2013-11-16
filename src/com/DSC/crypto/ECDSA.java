@@ -1,15 +1,15 @@
 package com.DSC.crypto;
 
 import java.math.BigInteger;
-import java.sql.Timestamp;
 
 import org.bouncycastle.crypto.CipherParameters;
+import org.bouncycastle.crypto.digests.SHA256Digest;
 import org.bouncycastle.crypto.signers.ECDSASigner;
+import org.bouncycastle.util.encoders.Hex;
+import org.bouncycastle.crypto.Digest;
 
 public abstract class ECDSA
-{
-    private static final ECKeyParam param = new ECKeyParam();
-    
+{    
     /**
      * Signs the public key for an authentication request and returns the signature
      * @param priKey The private key used to sign the data
@@ -21,7 +21,7 @@ public abstract class ECDSA
             String passphrase)
     {   
         /* Convert the public key and passphrase to byte arrays */
-        byte[] _pubKey = ECGKeyUtil.encodePubKey(param, pubKey);
+        byte[] _pubKey = ECGKeyUtil.encodePubKey(pubKey);
         byte[] _passphrase = passphrase.getBytes();
         
         /* Combine the public key and passphrase */
@@ -29,7 +29,9 @@ public abstract class ECDSA
         System.arraycopy(_pubKey, 0, data, 0, _pubKey.length);
         System.arraycopy(_passphrase, 0, data, _pubKey.length, _passphrase.length);
         
-        return sign(priKey, data);
+        System.out.println(new String(Hex.encode(data)));
+
+        return sign(priKey, hash(data));
     }
     
     /**
@@ -43,7 +45,7 @@ public abstract class ECDSA
             BigInteger[] signature)
     {   
         /* Convert the public key and passphrase to byte arrays */
-        byte[] _pubKey = ECGKeyUtil.encodePubKey(param, pubKey);
+        byte[] _pubKey = ECGKeyUtil.encodePubKey(pubKey);
         byte[] _passphrase = passphrase.getBytes();
         
         /* Combine the public key and passphrase */
@@ -51,7 +53,9 @@ public abstract class ECDSA
         System.arraycopy(_pubKey, 0, data, 0, _pubKey.length);
         System.arraycopy(_passphrase, 0, data, _pubKey.length, _passphrase.length);
         
-        return verify(pubKey, data, signature);
+        System.out.println(new String(Hex.encode(data)));
+        
+        return verify(pubKey, hash(data), signature);
     }
     
     /**
@@ -66,8 +70,8 @@ public abstract class ECDSA
             CipherParameters authKey, String passphrase)
     {
         /* Convert the data to byte arrays */
-        byte[] _pubKey = ECGKeyUtil.encodePubKey(param, pubKey);
-        byte[] _authKey = ECGKeyUtil.encodePubKey(param, authKey);
+        byte[] _pubKey = ECGKeyUtil.encodePubKey(pubKey);
+        byte[] _authKey = ECGKeyUtil.encodePubKey(authKey);
         byte[] _passphrase = passphrase.getBytes();
         
         /* Combine the public key and passphrase */
@@ -76,8 +80,7 @@ public abstract class ECDSA
         System.arraycopy(_authKey, 0, data, _pubKey.length, _authKey.length);
         System.arraycopy(_passphrase, 0, data, _pubKey.length + _authKey.length, _passphrase.length);
         
-        return sign(priKey, data);
-
+        return sign(priKey, hash(data));
     }
     
     /**
@@ -91,8 +94,8 @@ public abstract class ECDSA
             String passphrase, BigInteger[] signature)
     {
         /* Convert the data to byte arrays */
-        byte[] _pubKey = ECGKeyUtil.encodePubKey(param, pubKey);
-        byte[] _authKey = ECGKeyUtil.encodePubKey(param, authKey);
+        byte[] _pubKey = ECGKeyUtil.encodePubKey(pubKey);
+        byte[] _authKey = ECGKeyUtil.encodePubKey(authKey);
         byte[] _passphrase = passphrase.getBytes();
         
         /* Combine the public key and byte arrays */
@@ -101,7 +104,7 @@ public abstract class ECDSA
         System.arraycopy(_authKey, 0, data, _pubKey.length, _authKey.length);
         System.arraycopy(_passphrase, 0, data, _pubKey.length + _authKey.length, _passphrase.length);
         
-        return verify(pubKey, data, signature);
+        return verify(pubKey, hash(data), signature);
     }
     
     /**
@@ -142,7 +145,7 @@ public abstract class ECDSA
             byte[] symmetricKey, String passphrase)
     {
         /* Convert the data to byte arrays */
-        byte[] _pubKey = ECGKeyUtil.encodePubKey(param, pubKey);
+        byte[] _pubKey = ECGKeyUtil.encodePubKey(pubKey);
         byte[] _passphrase = passphrase.getBytes();
         
         /* Combine the public key and byte arrays */
@@ -151,7 +154,7 @@ public abstract class ECDSA
         System.arraycopy(symmetricKey, 0, data, _pubKey.length, symmetricKey.length);
         System.arraycopy(_passphrase, 0, data, _pubKey.length + symmetricKey.length, _passphrase.length);
         
-        return sign(priKey, data);        
+        return sign(priKey, hash(data));        
     }
     
     /**
@@ -166,7 +169,7 @@ public abstract class ECDSA
             String passphrase, BigInteger[] signature)
     {
         /* Convert the data to byte arrays */
-        byte[] _pubKey = ECGKeyUtil.encodePubKey(param, pubKey);
+        byte[] _pubKey = ECGKeyUtil.encodePubKey(pubKey);
         byte[] _passphrase = passphrase.getBytes();
         
         /* Combine the public key and byte arrays */
@@ -175,7 +178,27 @@ public abstract class ECDSA
         System.arraycopy(symmetricKey, 0, data, _pubKey.length, symmetricKey.length);
         System.arraycopy(_passphrase, 0, data, _pubKey.length + symmetricKey.length, _passphrase.length);
         
-        return verify(pubKey, data, signature); 
+        return verify(pubKey, hash(data), signature); 
+    }
+    
+    
+    /**
+     * 
+     * @param data
+     * @return
+     */
+    private static byte[] hash(byte[] data)
+    {
+        Digest digest = new SHA256Digest();
+        byte[] hash = new byte[digest.getDigestSize()];
+        
+        digest.update(data, 0, data.length);
+        digest.doFinal(hash, 0);
+        digest.reset();
+        
+        System.out.println(new String(Hex.encode(hash)));
+        
+        return hash;
     }
     
     /**

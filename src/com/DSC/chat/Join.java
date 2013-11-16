@@ -19,41 +19,46 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.DSC.message;
+package com.DSC.chat;
 
-import java.io.Serializable;
-import java.math.BigInteger;
+import java.util.regex.Pattern;
 
-public class AuthRequest implements SecureMessage, Serializable
+import com.DSC.utility.ProgramState;
+
+public class Join extends CommandParser
 {
-    private static final long serialVersionUID = -2115084427555115658L;
-    private static final MessageType type = MessageType.AUTH_REQUEST;
-    private final byte[] publicKey;
-    private final BigInteger[] signature;
+    private String channel;
 
-    public MessageType getType()
+    public static Join parse(String entry)
     {
-        return AuthRequest.type;
+        entry = rtrim(entry);
+        String[] elements = entry.split(" ");
+        
+        if(elements.length == 1)
+        {
+            if(Pattern.compile(COMMAND_INDICATOR + "join",
+                    Pattern.CASE_INSENSITIVE).matcher(elements[0]).matches())
+            {
+                return new Join();
+            }
+        }
+        return null;
     }
 
-    public byte[] getPublicKey()
+    
+    @Override
+    public boolean executeCommand() 
     {
-        return this.publicKey;
+        if (!Pattern.matches("[a-zA-Z_\\s0-9-]+", this.channel))
+        {
+            return false;
+        }
+        
+        return true;
     }
-
-    public BigInteger[] getSignature()
+    
+    public void setChannel(String channel)
     {
-        return this.signature;
-    }
-
-    /**
-     * 
-     * @param publicKey
-     * @param signature
-     */
-    public AuthRequest(byte[] publicKey, BigInteger[] signature)
-    {
-        this.publicKey = publicKey;
-        this.signature = signature;
+        this.channel = channel;
     }
 }

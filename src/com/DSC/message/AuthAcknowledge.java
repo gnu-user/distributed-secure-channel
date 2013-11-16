@@ -21,15 +21,15 @@
  */
 package com.DSC.message;
 
+import java.io.Serializable;
 import java.math.BigInteger;
 
-import org.bouncycastle.crypto.params.ECPublicKeyParameters;
-
-public class AuthAcknowledge implements SecureMessage
+public class AuthAcknowledge implements SecureMessage, Serializable
 {
+    private static final long serialVersionUID = 127852287918652976L;
     private static final MessageType type = MessageType.AUTH_ACKNOWLEDGE;
-    private final ECPublicKeyParameters publicKey;
-    private final ECPublicKeyParameters authKey;
+    private final byte[] publicKey;
+    private final byte[] authKey;
     private final BigInteger[] signature;
 
     public MessageType getType()
@@ -37,12 +37,12 @@ public class AuthAcknowledge implements SecureMessage
         return AuthAcknowledge.type;
     }
 
-    public ECPublicKeyParameters getPublicKey()
+    public byte[] getPublicKey()
     {
         return this.publicKey;
     }
 
-    public ECPublicKeyParameters getAuthKey()
+    public byte[] getAuthKey()
     {
         return this.authKey;
     }
@@ -59,7 +59,7 @@ public class AuthAcknowledge implements SecureMessage
      * @param timestamp
      * @param signature
      */
-    public AuthAcknowledge(ECPublicKeyParameters publicKey, ECPublicKeyParameters authKey, BigInteger[] signature)
+    public AuthAcknowledge(byte[] publicKey, byte[] authKey, BigInteger[] signature)
     {
         this.publicKey = publicKey;
         this.authKey = authKey;
