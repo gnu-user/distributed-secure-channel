@@ -23,28 +23,42 @@ package com.DSC.chat;
 
 import java.util.regex.Pattern;
 
-public abstract class CommandParser {
-	
-	public static final String COMMAND_INDICATOR = "/";
-	
-	/**
-	 * Check if the given string is a valid command
-	 * @param entry
-	 * @return
-	 */
-	public static boolean isCommand(String entry)
-	{
-		return Pattern.compile(COMMAND_INDICATOR + "((nick .*)|(quit)|(create)|(join)|(request))",
-				Pattern.CASE_INSENSITIVE).matcher(entry).matches();
-	}
-	
-	public static String rtrim(String s) {
-	    int i = s.length()-1;
-	    while (i >= 0 && Character.isWhitespace(s.charAt(i))) {
-	        i--;
-	    }
-	    return s.substring(0,i+1);
-	}
+import com.DSC.utility.ProgramState;
 
-	public abstract boolean executeCommand();
+public class Join extends CommandParser
+{
+    private String channel;
+
+    public static Join parse(String entry)
+    {
+        entry = rtrim(entry);
+        String[] elements = entry.split(" ");
+        
+        if(elements.length == 1)
+        {
+            if(Pattern.compile(COMMAND_INDICATOR + "join",
+                    Pattern.CASE_INSENSITIVE).matcher(elements[0]).matches())
+            {
+                return new Join();
+            }
+        }
+        return null;
+    }
+
+    
+    @Override
+    public boolean executeCommand() 
+    {
+        if (!Pattern.matches("[a-zA-Z_\\s0-9-]+", this.channel))
+        {
+            return false;
+        }
+        
+        return true;
+    }
+    
+    public void setChannel(String channel)
+    {
+        this.channel = channel;
+    }
 }
