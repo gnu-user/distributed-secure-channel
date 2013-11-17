@@ -31,7 +31,6 @@ public abstract class AbstractMessageFactory
      * @param publicKey
      * @param IV
      * @param other
-     * @param timestamp
      * @param signature ECDSA signature or Hashed based Message Authentication Code (HMAC) signature
      * @throws IllegalArgumentException
      */
