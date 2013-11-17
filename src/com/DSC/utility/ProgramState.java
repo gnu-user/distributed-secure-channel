@@ -38,7 +38,7 @@ public abstract class ProgramState
     public static boolean AUTHENTICATION_DECISION;
     public static boolean AUTHENTICATION_ACKNOWLEDGE;
     public static JChannel channel;
-    public static String nick;
+    public static String nick = "anonymous";
     public static ConcurrentHashMultiset<ECPublicKeyParameters> trustedKeys;
     public static ConcurrentHashMultiset<Address> blacklist;
     public static ECPublicKeyParameters publicKey;
