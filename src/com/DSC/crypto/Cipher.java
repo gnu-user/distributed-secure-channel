@@ -165,8 +165,16 @@ public abstract class Cipher
        return hmacBigInt;
     }
     
-    
-    public static boolean verifyHMAC(String passphrase, BigInteger[] HMAC, byte[] data)
+    /**
+     * 
+     * @param passphrase
+     * @param HMAC
+     * @param data
+     * @return
+     * @throws InvalidCipherTextException
+     */
+    public static boolean verifyHMAC(String passphrase, BigInteger[] HMAC, byte[] data) 
+            throws InvalidCipherTextException
     {
         HMac hmac = new HMac(new MD5Digest());
         byte[] expHMAC = new byte[hmac.getMacSize()];
@@ -184,6 +192,13 @@ public abstract class Cipher
         System.out.println("HMAC REC: " + new String(Hex.encode(recHMAC)));
         
         /* Compare the HMAC received to the expected HMAC */
-        return Arrays.equals(expHMAC, recHMAC);
+        if (Arrays.equals(expHMAC, recHMAC))
+        {
+            return true;
+        }
+        else
+        {
+            throw new InvalidCipherTextException("Message HMAC failed!");
+        }
     }
 }
