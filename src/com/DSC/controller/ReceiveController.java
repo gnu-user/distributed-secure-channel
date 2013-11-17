@@ -121,21 +121,26 @@ public class ReceiveController extends ReceiverAdapter
         System.out.println(authRequest.getSignature().toString());
         
         ECPublicKeyParameters pubKey = ECGKeyUtil.decodePubKey(authRequest.getPublicKey());
-        BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
         
         // If authenticated state
         // Prompt user to authenticate
-        System.out.println("> Received key exchange from: " + src.toString());
-        System.out.println("> Verify/Reject/Ignore (V/R/I): ");
+        ProgramState.AUTHENTICATION_DECISION = true;
+        BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
         
-        if (in.readLine().toLowerCase().equals("v"))
+        System.out.println("> Received key exchange from: " + src.toString());
+        System.out.print("> Verify/Reject/Ignore (V/R/I): ");
+        
+        String choice = in.readLine().toLowerCase().trim();
+        System.out.println("GOT IT: " + choice);
+        
+        if (choice.equals("v"))
         {
             if (ECDSA.verifyAuthRequest(pubKey, ProgramState.passphrase, authRequest.getSignature()))
             {
                 System.out.println("> Signature valid.");
-                System.out.println("> Trust new member? (Y/N): ");
+                System.out.print("> Trust new member? (Y/N): ");
                 
-                if (in.readLine().toLowerCase().equals("y"))
+                if (ProgramState.in.readLine().toLowerCase().equals("y"))
                 {
                     // Update list of trusted members
                     System.out.println("> Updating list of trusted members...");
@@ -150,16 +155,17 @@ public class ReceiveController extends ReceiverAdapter
                     sendController.send(MessageType.AUTH_ACKNOWLEDGE, pubKey, null);
                     
                     // Update state
+                    ProgramState.AUTHENTICATION_DECISION = false;
                     ProgramState.AUTHENTICATION_ACKNOWLEDGE = true;
                 }
             }
             else
             {
                 System.out.println("> Signature invalid.");
-                System.out.println("> Ignore sender? (Y/N): ");
+                System.out.print("> Ignore sender? (Y/N): ");
                 
                 // ban if reject
-                if (in.readLine().toLowerCase().equals("y"))
+                if (ProgramState.in.readLine().toLowerCase().trim().equals("y"))
                 {
                     ProgramState.blacklist.add(src);    
                     System.out.println("> Sender ignored permanently.");
@@ -168,6 +174,7 @@ public class ReceiveController extends ReceiverAdapter
         }
         
         // do nothing if ignore
+        System.out.flush();
     }
 
     /**
@@ -212,6 +219,7 @@ public class ReceiveController extends ReceiverAdapter
      */
     private void keyExchangeHandler(SecureMessage msg)
     {
+        System.out.println("KEY EXCHANGE REQUEST RECEIVED!");
         // Check state, if awaiting key request
             // Check key received is from trusted
             // Check key received is valid
