@@ -69,8 +69,11 @@ public class Create extends CommandParser {
 		isaac.init(seed);
 		isaac.nextBytes(symmetricKey);
 		ProgramState.symmetricKey = symmetricKey;
-		
 		ProgramState.passphrase = this.passphrase;
+		
+		// Creator of channel is authenticated
+		ProgramState.AUTHENTICATED = true;
+		
 		return true;
 	}
 	
