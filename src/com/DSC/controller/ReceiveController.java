@@ -34,6 +34,7 @@ import com.DSC.crypto.ECGKeyUtil;
 import com.DSC.message.AuthAcknowledge;
 import com.DSC.message.AuthRequest;
 import com.DSC.message.EncryptedMessage;
+import com.DSC.message.Key;
 import com.DSC.message.SecureMessage;
 import com.DSC.utility.ProgramState;
 
@@ -138,6 +139,12 @@ public class ReceiveController extends ReceiverAdapter
     {
         System.out.println("AUTHENTICATION ACKNOWLEDGE RECEIVED!");
         
+        // Check if in requesting auth state
+        if (! ProgramState.AUTHENTICATION_REQUEST)
+        {
+            return;
+        }
+        
         AuthAcknowledge authAcknowledge = (AuthAcknowledge) msg;
         System.out.println(new String(Hex.encode(authAcknowledge.getPublicKey())));
         System.out.println(new String(Hex.encode(authAcknowledge.getAuthKey())));
@@ -147,17 +154,13 @@ public class ReceiveController extends ReceiverAdapter
         ECPublicKeyParameters pubKey = ECGKeyUtil.decodePubKey(authAcknowledge.getPublicKey());
         ECPublicKeyParameters authKey = ECGKeyUtil.decodePubKey(authAcknowledge.getAuthKey());
         
-        // Check if in requesting auth state
-        if (ProgramState.AUTHENTICATION_REQUEST)
+        // Check if acknowledge valid
+        if (ECDSA.verifyAuthAcknowledge(pubKey, authKey, ProgramState.passphrase, authAcknowledge.getSignature()))
         {
-            // Check if acknowledge valid
-            if (ECDSA.verifyAuthAcknowledge(pubKey, authKey, ProgramState.passphrase, authAcknowledge.getSignature()))
+            // Add the node that acknowledged as trusted (for client requesting access)
+            if (! ProgramState.trustedKeys.contains(pubKey))
             {
-                // Add the node that acknowledged as trusted (for client requesting access)
-                if (! ProgramState.trustedKeys.contains(pubKey))
-                {
-                    ProgramState.trustedKeys.add(pubKey);
-                }
+                ProgramState.trustedKeys.add(pubKey);
             }
         }
     }
@@ -182,10 +185,34 @@ public class ReceiveController extends ReceiverAdapter
      */
     private void keyHandler(SecureMessage msg)
     {
+        System.out.println("KEY RECEIVED!");
+        
         // Check state, if awaiting key exchange
+        if (! ProgramState.KEY_EXCHANGE_REQUEST)
+        {
+            return;
+        }
+        
+        Key key = (Key) msg;
+        System.out.println(new String(Hex.encode(key.getPublicKey())));
+        System.out.println(new String(Hex.encode(key.getSymmetricKey())));
+        System.out.println(key.getSignature()[0]);
+        System.out.println(key.getSignature()[1]);
+        
+        ECPublicKeyParameters pubKey = ECGKeyUtil.decodePubKey(key.getPublicKey());
+        
+        // If from trusted contact
+        if (ProgramState.trustedKeys.contains(pubKey))
+        {
             // Verify key
-            // Set symmetric key
-        // If not awaiting key ignore
+            if (ECDSA.verifyKey(pubKey, key.getSymmetricKey(), ProgramState.passphrase, key.getSignature()))
+            {
+                // Set symmetric key
+                // update state to not receiving
+                ProgramState.symmetricKey = key.getSymmetricKey();
+                ProgramState.KEY_EXCHANGE_REQUEST = true;
+            }
+        }
     }
 
     /**
