@@ -28,6 +28,7 @@ import org.bouncycastle.crypto.CipherParameters;
 import org.bouncycastle.crypto.InvalidCipherTextException;
 import org.bouncycastle.crypto.StreamCipher;
 import org.bouncycastle.crypto.agreement.ECDHCBasicAgreement;
+import org.bouncycastle.crypto.digests.MD5Digest;
 import org.bouncycastle.crypto.digests.SHA256Digest;
 import org.bouncycastle.crypto.engines.Grain128Engine;
 import org.bouncycastle.crypto.engines.IESEngine;
@@ -150,7 +151,7 @@ public abstract class Cipher
      */
     public static BigInteger[] generateHMAC(String passphrase, byte[] data)
     {
-       HMac hmac = new HMac(new SHA256Digest());
+       HMac hmac = new HMac(new MD5Digest());
        byte[] buf = new byte[hmac.getMacSize()];
        BigInteger[] hmacBigInt = new BigInteger[1];
        
@@ -167,7 +168,7 @@ public abstract class Cipher
     
     public static boolean verifyHMAC(String passphrase, BigInteger[] HMAC, byte[] data)
     {
-        HMac hmac = new HMac(new SHA256Digest());
+        HMac hmac = new HMac(new MD5Digest());
         byte[] expHMAC = new byte[hmac.getMacSize()];
         byte[] recHMAC = new byte[hmac.getMacSize()];
         
