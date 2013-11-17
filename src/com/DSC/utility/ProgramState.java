@@ -31,12 +31,12 @@ import com.google.common.collect.ConcurrentHashMultiset;
 
 public abstract class ProgramState
 {
-    public static boolean AUTHENTICATION_REQUEST;
-    public static boolean AUTHENTICATED;
-    public static boolean KEY_EXCHANGE_REQUEST;
-    public static boolean KEY_RECEIVED;
-    public static boolean AUTHENTICATION_DECISION;
-    public static boolean AUTHENTICATION_ACKNOWLEDGE;
+    public static boolean AUTHENTICATION_REQUEST = false;
+    public static boolean AUTHENTICATED = false;
+    public static boolean KEY_EXCHANGE_REQUEST = false;
+    public static boolean KEY_RECEIVED = false;
+    public static boolean AUTHENTICATION_DECISION = false;
+    public static boolean AUTHENTICATION_ACKNOWLEDGE = false;
     public static JChannel channel;
     public static String nick = "anonymous";
     public static ConcurrentHashMultiset<ECPublicKeyParameters> trustedKeys;
