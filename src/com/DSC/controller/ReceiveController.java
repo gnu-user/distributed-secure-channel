@@ -21,9 +21,12 @@
  */
 package com.DSC.controller;
 
+import org.bouncycastle.util.encoders.Hex;
+import org.jgroups.Address;
 import org.jgroups.Message;
 import org.jgroups.ReceiverAdapter;
 
+import com.DSC.crypto.Cipher;
 import com.DSC.crypto.ECDSA;
 import com.DSC.crypto.ECGKeyUtil;
 import com.DSC.message.*;
@@ -38,6 +41,14 @@ public class ReceiveController extends ReceiverAdapter
     @Override
     public void receive(Message msg)
     {
+        /* Ignore any messages from blocked senders */
+        System.out.println(msg.getSrc());
+        if (ProgramState.blacklist.contains(msg.getSrc()))
+        {
+            System.out.println("BANNED: " + msg.getSrc());
+            return;
+        }
+        
         /* Attempt to cast the message type and call the appropriate handler */
         try
         {
@@ -46,7 +57,7 @@ public class ReceiveController extends ReceiverAdapter
             switch (secureMsg.getType())
             {
                 case AUTH_REQUEST:
-                    authRequestHandler(secureMsg);
+                    authRequestHandler(secureMsg, msg.getSrc());
                     break;
                 case AUTH_ACKNOWLEDGE:
                     authAcknowledgeHandler(secureMsg);
@@ -80,7 +91,7 @@ public class ReceiveController extends ReceiverAdapter
      * 
      * @param msg
      */
-    private void authRequestHandler(SecureMessage msg)
+    private void authRequestHandler(SecureMessage msg, Address src)
     {
         System.out.println("AUTHENTICATION REQUEST RECEIVED!");
         System.out.println(ProgramState.passphrase);
@@ -97,6 +108,7 @@ public class ReceiveController extends ReceiverAdapter
         else
         {
             System.out.println("INVALID");
+            ProgramState.blacklist.add(src);
         }
     }
 
@@ -106,7 +118,7 @@ public class ReceiveController extends ReceiverAdapter
      */
     private void authAcknowledgeHandler(SecureMessage msg)
     {
-        throw new UnsupportedOperationException();
+        
     }
 
     /**
@@ -133,7 +145,32 @@ public class ReceiveController extends ReceiverAdapter
      */
     private void encryptedMessageHandler(SecureMessage msg)
     {
-        throw new UnsupportedOperationException();
+        System.out.println("ENCRYPTED MESSAGE RECEIVED");
+        
+        EncryptedMessage encryptedMessage = (EncryptedMessage) msg;
+        System.out.println(new String(Hex.encode(encryptedMessage.getIV())));
+        System.out.println(new String(Hex.encode(encryptedMessage.getMessage())));
+        System.out.println(new String(Hex.encode(encryptedMessage.getHMAC()[0].toByteArray())));
+        
+        
+        /* Display the decrypted message */
+        
+        if (Cipher.verifyHMAC(ProgramState.passphrase, encryptedMessage.getHMAC(), 
+                encryptedMessage.getMessage()))
+        {
+            System.out.println("VALID");
+            
+            /* Display the decrypted message */
+            byte[] message = Cipher.decryptMsg(
+                    ProgramState.symmetricKey, 
+                    encryptedMessage.getIV(), 
+                    encryptedMessage.getMessage());
+            
+            System.out.println(new String(message));
+        }
+        else
+        {
+            System.out.println("INVALID");
+        }
     }
-
 }
