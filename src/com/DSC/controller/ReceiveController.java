@@ -21,6 +21,8 @@
  */
 package com.DSC.controller;
 
+import org.bouncycastle.crypto.InvalidCipherTextException;
+import org.bouncycastle.crypto.params.ECPublicKeyParameters;
 import org.bouncycastle.util.encoders.Hex;
 import org.jgroups.Address;
 import org.jgroups.Message;
@@ -29,7 +31,10 @@ import org.jgroups.ReceiverAdapter;
 import com.DSC.crypto.Cipher;
 import com.DSC.crypto.ECDSA;
 import com.DSC.crypto.ECGKeyUtil;
-import com.DSC.message.*;
+import com.DSC.message.AuthAcknowledge;
+import com.DSC.message.AuthRequest;
+import com.DSC.message.EncryptedMessage;
+import com.DSC.message.SecureMessage;
 import com.DSC.utility.ProgramState;
 
 public class ReceiveController extends ReceiverAdapter
@@ -80,6 +85,10 @@ public class ReceiveController extends ReceiverAdapter
             System.err.println("Invalid message object for type provided!");
             ce.printStackTrace();
         }
+        catch (InvalidCipherTextException cte)
+        {
+            cte.printStackTrace();
+        }
         catch (Exception e)
         {
             System.err.println("Something went terribly wrong!");
@@ -93,6 +102,9 @@ public class ReceiveController extends ReceiverAdapter
      */
     private void authRequestHandler(SecureMessage msg, Address src)
     {
+        // Check state
+            // If authenticated state
+                // Prompt user to authenticate
         System.out.println("AUTHENTICATION REQUEST RECEIVED!");
         System.out.println(ProgramState.passphrase);
         
@@ -110,6 +122,12 @@ public class ReceiveController extends ReceiverAdapter
             System.out.println("INVALID");
             ProgramState.blacklist.add(src);
         }
+        
+        
+        // Send acknowledge if valid
+        // ban if reject
+        // do nothing if ignore
+        
     }
 
     /**
@@ -118,7 +136,30 @@ public class ReceiveController extends ReceiverAdapter
      */
     private void authAcknowledgeHandler(SecureMessage msg)
     {
+        System.out.println("AUTHENTICATION ACKNOWLEDGE RECEIVED!");
         
+        AuthAcknowledge authAcknowledge = (AuthAcknowledge) msg;
+        System.out.println(new String(Hex.encode(authAcknowledge.getPublicKey())));
+        System.out.println(new String(Hex.encode(authAcknowledge.getAuthKey())));
+        System.out.println(authAcknowledge.getSignature()[0]);
+        System.out.println(authAcknowledge.getSignature()[1]);
+        
+        ECPublicKeyParameters pubKey = ECGKeyUtil.decodePubKey(authAcknowledge.getPublicKey());
+        ECPublicKeyParameters authKey = ECGKeyUtil.decodePubKey(authAcknowledge.getAuthKey());
+        
+        // Check if in requesting auth state
+        if (ProgramState.AUTHENTICATION_REQUEST)
+        {
+            // Check if acknowledge valid
+            if (ECDSA.verifyAuthAcknowledge(pubKey, authKey, ProgramState.passphrase, authAcknowledge.getSignature()))
+            {
+                // Add the node that acknowledged as trusted (for client requesting access)
+                if (! ProgramState.trustedKeys.contains(pubKey))
+                {
+                    ProgramState.trustedKeys.add(pubKey);
+                }
+            }
+        }
     }
 
     /**
@@ -127,7 +168,12 @@ public class ReceiveController extends ReceiverAdapter
      */
     private void keyExchangeHandler(SecureMessage msg)
     {
-        throw new UnsupportedOperationException();
+        // Check state, if awaiting key request
+            // Check key received is from trusted
+            // Check key received is valid
+        
+        // Back-off timer
+            // If key already sent by someone else, stop
     }
 
     /**
@@ -136,15 +182,25 @@ public class ReceiveController extends ReceiverAdapter
      */
     private void keyHandler(SecureMessage msg)
     {
-        throw new UnsupportedOperationException();
+        // Check state, if awaiting key exchange
+            // Verify key
+            // Set symmetric key
+        // If not awaiting key ignore
     }
 
     /**
      * 
      * @param msg
      */
-    private void encryptedMessageHandler(SecureMessage msg)
+    private void encryptedMessageHandler(SecureMessage msg) 
+            throws InvalidCipherTextException
     {
+        /* Check that in a valid state */
+        if (! ProgramState.AUTHENTICATED)
+        {
+            return;
+        }
+        
         System.out.println("ENCRYPTED MESSAGE RECEIVED");
         
         EncryptedMessage encryptedMessage = (EncryptedMessage) msg;
@@ -157,20 +213,14 @@ public class ReceiveController extends ReceiverAdapter
         
         if (Cipher.verifyHMAC(ProgramState.passphrase, encryptedMessage.getHMAC(), 
                 encryptedMessage.getMessage()))
-        {
-            System.out.println("VALID");
-            
+        {            
             /* Display the decrypted message */
             byte[] message = Cipher.decryptMsg(
                     ProgramState.symmetricKey, 
                     encryptedMessage.getIV(), 
                     encryptedMessage.getMessage());
             
-            System.out.println(new String(message));
-        }
-        else
-        {
-            System.out.println("INVALID");
+            System.out.println("> " + new String(message));
         }
     }
 }
