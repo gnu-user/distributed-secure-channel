@@ -23,7 +23,9 @@ package com.DSC.client;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.security.SecureRandom;
 
+import org.bouncycastle.crypto.engines.ISAACEngine;
 import org.bouncycastle.crypto.params.ECPrivateKeyParameters;
 import org.bouncycastle.crypto.params.ECPublicKeyParameters;
 import org.jgroups.Address;
@@ -38,6 +40,7 @@ import com.DSC.chat.Request;
 import com.DSC.controller.ReceiveController;
 import com.DSC.controller.SendController;
 import com.DSC.crypto.ECKey;
+import com.DSC.crypto.ISAACRandomGenerator;
 import com.DSC.message.MessageType;
 import com.DSC.utility.ProgramState;
 import com.google.common.collect.ConcurrentHashMultiset;
@@ -51,7 +54,7 @@ public class DistributedSecureChannel
      *
      * @throws Exception
      */
-    private void join(String name) throws Exception
+    private static void join(String name) throws Exception
     {
         ProgramState.channel = new JChannel();
         ProgramState.channel.setDiscardOwnMessages(true);
@@ -61,17 +64,18 @@ public class DistributedSecureChannel
     
     /**
      * The main eventLoop that handles the user input for the IRC client
+     * @throws InterruptedException 
      */
-    private void eventLoop()
+    private static void eventLoop() throws InterruptedException
     {
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
         
-        while (true)
+        while (! ProgramState.AUTHENTICATION_DECISION)
         {
             try
             {
                 System.out.flush();
-                System.out.print("> ");
+                System.out.print(ProgramState.nick + "> ");
                 String line = in.readLine();
                 
                 if (CommandParser.isCommand(line))
@@ -84,6 +88,10 @@ public class DistributedSecureChannel
                 	
                 	if ((nick = Nick.parse(line)) != null)
 	                {
+            	        System.out.print("> Enter a nickname: ");
+            	        String nickname = in.readLine();
+            	        nick.setNickname(nickname);
+                	    
                 		nick.executeCommand();
                 		System.out.println("> User nick changed to " + nick.getNick());
 	                }
@@ -104,7 +112,7 @@ public class DistributedSecureChannel
                 		
                 		if (create.executeCommand())
                 		{
-                			if (ProgramState.channel == null)
+                			if (ProgramState.channel == null || !ProgramState.channel.equals(channelName))
                 			{
                 			    join(channelName);                		
                 			    System.out.println("> Channel " + channelName + " created.");
@@ -136,11 +144,8 @@ public class DistributedSecureChannel
                 	}
                 	else if ((request = Request.parse(line)) != null)
 	                {
-                		System.out.print("> Enter the channel to request access: ");
-                		String channelName = in.readLine();
                 		System.out.print("> Enter authentication: ");
                 		String passphrase = in.readLine();
-                		request.setChannel(channelName);
                 		request.setPassphrase(passphrase);
                 		
                 		if (request.executeCommand())
@@ -154,6 +159,19 @@ public class DistributedSecureChannel
 	                		
 		                    // Send out the request to join
 		                    sendController.send(MessageType.AUTH_REQUEST, null, null);
+		                    
+		                    // Wait 10 seconds to see if authenticated
+		                    Thread.sleep(20000);
+		                    
+		                    // Send key exchange request if authenticated
+		                    if (ProgramState.AUTHENTICATED)
+		                    {
+		                        sendController.send(MessageType.AUTH_REQUEST, null, null);
+		                    }
+		                    else
+		                    {
+		                        System.out.println("No key received, failed to join channel.");
+		                    }
                 		}
                 		else
                 		{
@@ -163,27 +181,46 @@ public class DistributedSecureChannel
                 }
                 else
                 {
-                    // Send a message
+                    // Send the message
+                    sendController.send(MessageType.ENCRYPTED_MESSAGE, ProgramState.nick + "> " + line, null);
                 }
             }
             catch (Exception e)
             {
                 e.printStackTrace();
             }
+            
+            Thread.sleep(100);
         }
     }
     
     
     /**
      * @param args
+     * @throws InterruptedException 
      */
-    public static void main(String[] args)
+    public static void main(String[] args) throws InterruptedException
     {
         // Create their private & public keys
         ECKey key = new ECKey();
         key.init();
         ProgramState.publicKey = (ECPublicKeyParameters) key.getPublic();
         ProgramState.privateKey = (ECPrivateKeyParameters) key.getPrivate();
+       
+        // Create the IV engine
+        byte[] seed = new byte[64]; // 512 bit seed 
+        SecureRandom random = new SecureRandom();
+        random.nextBytes(seed);
+        ProgramState.IVEngine = new ISAACRandomGenerator(new ISAACEngine());
+        ProgramState.IVEngine.init(seed);
+        
+        /*
+        // Set the symmetric key
+        ProgramState.symmetricKey = "Is it 16 bytes?!".getBytes();
+        
+        // Set the passphrase
+        ProgramState.passphrase = "test";
+        */
         
         // Create the blacklist and trusted contacts
         ProgramState.blacklist =  ConcurrentHashMultiset.create();
@@ -196,7 +233,7 @@ public class DistributedSecureChannel
         receiveController = new ReceiveController();
         sendController = new SendController();
 
-        new DistributedSecureChannel().eventLoop();
+        eventLoop();
     }
 
 }
