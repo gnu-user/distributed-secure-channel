@@ -25,6 +25,7 @@ import java.math.BigInteger;
 
 import org.bouncycastle.crypto.InvalidCipherTextException;
 import org.bouncycastle.crypto.params.ECPublicKeyParameters;
+import org.bouncycastle.util.encoders.Hex;
 import org.jgroups.Address;
 import org.jgroups.Message;
 
@@ -202,7 +203,7 @@ public class SendController
     private void encryptedMessageHandler(Object message) throws Exception
     {
         // Generate another unique IV
-        byte[] IV = new byte[24];
+        byte[] IV = new byte[12];
         ProgramState.IVEngine.nextBytes(IV);
         
         // Encrypt the message using symmetric key and IV with GRAIN
@@ -211,18 +212,23 @@ public class SendController
                 IV, 
                 ((String) message).getBytes());
         
-        // TODO Sign the message somehow (would be nice if used grain signing support
-        // fire off the message!
+		// Generate HMAC for the message
+        BigInteger[] HMAC = Cipher.generateHMAC(ProgramState.passphrase, encryptedMessage);
+        
+        System.out.println("SENDING ENCRYPTED MESSAGE");
+        System.out.println(new String(Hex.encode(encryptedMessage)));
+        System.out.println(new String(Hex.encode(HMAC[0].toByteArray())));
+        
+		// Send the encrypted message with HMAC
         SecureMessage secureMsg = AbstractMessageFactory.createMessage(
                 MessageType.ENCRYPTED_MESSAGE, 
                 null, 
                 IV, 
                 encryptedMessage, 
-                null);
+                HMAC);
         
         /* Send the message using JGroups */
         Message msg = new Message(null, null, secureMsg);
         ProgramState.channel.send(msg);
     }
-
 }
