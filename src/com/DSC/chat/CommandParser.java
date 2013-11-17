@@ -34,7 +34,7 @@ public abstract class CommandParser {
 	 */
 	public static boolean isCommand(String entry)
 	{
-		return Pattern.compile(COMMAND_INDICATOR + "((nick .*)|(quit)|(create)|(join)|(request))",
+		return Pattern.compile(COMMAND_INDICATOR + "((nick)|(quit)|(create)|(join)|(request))",
 				Pattern.CASE_INSENSITIVE).matcher(entry).matches();
 	}
 	

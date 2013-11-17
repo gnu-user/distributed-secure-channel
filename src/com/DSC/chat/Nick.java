@@ -28,32 +28,38 @@ import com.DSC.utility.ProgramState;
 public class Nick extends CommandParser {
 	
 	private String nickname;
-	
-	public Nick (String nickname)
-	{
-		this.nickname = nickname;
-	}
 
-	@Override
-	public boolean executeCommand() {
-		ProgramState.nick = this.nickname;
-		return true;
+	/**
+     * @param nickname the nickname to set
+     */
+    public void setNickname(String nickname)
+    {
+        this.nickname = nickname;
+    }
+
+    @Override
+	public boolean executeCommand()
+    {
+        //Ensure valid username
+        if(Pattern.matches("[a-zA-Z_0-9]+", this.nickname))
+        {
+            ProgramState.nick = this.nickname;
+            return true;
+        }
+        
+        return false;
 	}
 
 	public static Nick parse(String entry) {
 		entry = rtrim(entry);
 		String[] elements = entry.split(" ");
 		
-		if(elements.length == 2)
+		if(elements.length == 1)
 		{
 			if(Pattern.compile(COMMAND_INDICATOR + "nick",
 					Pattern.CASE_INSENSITIVE).matcher(elements[0]).matches())
 			{
-				//Ensure valid username
-				if(Pattern.matches("[a-zA-Z_0-9]+", elements[1]))
-				{
-					return new Nick(elements[1]);
-				}
+			    return new Nick();
 			}
 		}
 		return null;
