@@ -21,6 +21,10 @@
  */
 package com.DSC.controller;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+
 import org.bouncycastle.crypto.InvalidCipherTextException;
 import org.bouncycastle.crypto.params.ECPublicKeyParameters;
 import org.bouncycastle.util.encoders.Hex;
@@ -35,6 +39,7 @@ import com.DSC.message.AuthAcknowledge;
 import com.DSC.message.AuthRequest;
 import com.DSC.message.EncryptedMessage;
 import com.DSC.message.Key;
+import com.DSC.message.MessageType;
 import com.DSC.message.SecureMessage;
 import com.DSC.utility.ProgramState;
 
@@ -101,34 +106,68 @@ public class ReceiveController extends ReceiverAdapter
      * 
      * @param msg
      */
-    private void authRequestHandler(SecureMessage msg, Address src)
+    private void authRequestHandler(SecureMessage msg, Address src) throws IOException
     {
-        // Check state
-            // If authenticated state
-                // Prompt user to authenticate
         System.out.println("AUTHENTICATION REQUEST RECEIVED!");
-        System.out.println(ProgramState.passphrase);
         
+        // Check state
+        if (! ProgramState.AUTHENTICATED)
+        {
+            return;
+        }
+                
         AuthRequest authRequest = (AuthRequest) msg;
         System.out.println(authRequest.getPublicKey().toString());
         System.out.println(authRequest.getSignature().toString());
         
-        if (ECDSA.verifyAuthRequest(ECGKeyUtil.decodePubKey(authRequest.getPublicKey()), 
-                ProgramState.passphrase, authRequest.getSignature()))
+        ECPublicKeyParameters pubKey = ECGKeyUtil.decodePubKey(authRequest.getPublicKey());
+        BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+        
+        // If authenticated state
+        // Prompt user to authenticate
+        System.out.println("> Received key exchange from: " + src.toString());
+        System.out.println("> Verify/Reject/Ignore (V/R/I): ");
+        
+        if (in.readLine().toLowerCase().equals("v"))
         {
-            System.out.println("VALID");
-        }
-        else
-        {
-            System.out.println("INVALID");
-            ProgramState.blacklist.add(src);
+            if (ECDSA.verifyAuthRequest(pubKey, ProgramState.passphrase, authRequest.getSignature()))
+            {
+                System.out.println("> Signature valid.");
+                System.out.println("> Trust new member? (Y/N): ");
+                
+                if (in.readLine().toLowerCase().equals("y"))
+                {
+                    // Update list of trusted members
+                    System.out.println("> Updating list of trusted members...");
+                    if (! ProgramState.trustedKeys.contains(pubKey))
+                    {
+                        ProgramState.trustedKeys.add(pubKey);
+                    }
+                    
+                    // Send authenticated acknowledgement msg
+                    System.out.println("> Authenticated member announced.");
+                    SendController sendController = new SendController();
+                    sendController.send(MessageType.AUTH_ACKNOWLEDGE, pubKey, null);
+                    
+                    // Update state
+                    ProgramState.AUTHENTICATION_ACKNOWLEDGE = true;
+                }
+            }
+            else
+            {
+                System.out.println("> Signature invalid.");
+                System.out.println("> Ignore sender? (Y/N): ");
+                
+                // ban if reject
+                if (in.readLine().toLowerCase().equals("y"))
+                {
+                    ProgramState.blacklist.add(src);    
+                    System.out.println("> Sender ignored permanently.");
+                }
+            }
         }
         
-        
-        // Send acknowledge if valid
-        // ban if reject
         // do nothing if ignore
-        
     }
 
     /**
@@ -162,6 +201,8 @@ public class ReceiveController extends ReceiverAdapter
             {
                 ProgramState.trustedKeys.add(pubKey);
             }
+            
+            ProgramState.AUTHENTICATED = true;
         }
     }
 
@@ -188,7 +229,7 @@ public class ReceiveController extends ReceiverAdapter
         System.out.println("KEY RECEIVED!");
         
         // Check state, if awaiting key exchange
-        if (! ProgramState.KEY_EXCHANGE_REQUEST)
+        if (! (ProgramState.AUTHENTICATED || ProgramState.KEY_EXCHANGE_REQUEST))
         {
             return;
         }
