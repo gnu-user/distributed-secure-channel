@@ -21,6 +21,8 @@
  */
 package com.DSC.utility;
 
+import java.io.BufferedReader;
+
 import org.bouncycastle.crypto.params.ECPrivateKeyParameters;
 import org.bouncycastle.crypto.params.ECPublicKeyParameters;
 import org.jgroups.Address;
@@ -31,14 +33,15 @@ import com.google.common.collect.ConcurrentHashMultiset;
 
 public abstract class ProgramState
 {
-    public static boolean AUTHENTICATION_REQUEST = false;
-    public static boolean AUTHENTICATED = false;
-    public static boolean KEY_EXCHANGE_REQUEST = false;
-    public static boolean KEY_RECEIVED = false;
-    public static boolean AUTHENTICATION_DECISION = false;
-    public static boolean AUTHENTICATION_ACKNOWLEDGE = false;
+    public volatile static boolean AUTHENTICATION_REQUEST = false;
+    public volatile static boolean AUTHENTICATED = false;
+    public volatile static boolean KEY_EXCHANGE_REQUEST = false;
+    public volatile static boolean KEY_RECEIVED = false;
+    public volatile static boolean AUTHENTICATION_DECISION = false;
+    public volatile static boolean AUTHENTICATION_ACKNOWLEDGE = false;
     public static JChannel channel;
     public static String nick = "anonymous";
+    public volatile static BufferedReader in;
     public static ConcurrentHashMultiset<ECPublicKeyParameters> trustedKeys;
     public static ConcurrentHashMultiset<Address> blacklist;
     public static ECPublicKeyParameters publicKey;

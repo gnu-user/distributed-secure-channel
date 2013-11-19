@@ -22,13 +22,13 @@
 package com.DSC.client;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.security.SecureRandom;
 
 import org.bouncycastle.crypto.engines.ISAACEngine;
 import org.bouncycastle.crypto.params.ECPrivateKeyParameters;
 import org.bouncycastle.crypto.params.ECPublicKeyParameters;
-import org.jgroups.Address;
 import org.jgroups.JChannel;
 
 import com.DSC.chat.CommandParser;
@@ -68,7 +68,7 @@ public class DistributedSecureChannel
      */
     private static void eventLoop() throws InterruptedException
     {
-        BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+        ProgramState.in = new BufferedReader(new InputStreamReader(System.in));
         
         while (! ProgramState.AUTHENTICATION_DECISION)
         {
@@ -76,7 +76,7 @@ public class DistributedSecureChannel
             {
                 System.out.flush();
                 System.out.print(ProgramState.nick + "> ");
-                String line = in.readLine();
+                String line = ProgramState.in.readLine();
                 
                 if (CommandParser.isCommand(line))
                 {
@@ -89,7 +89,7 @@ public class DistributedSecureChannel
                 	if ((nick = Nick.parse(line)) != null)
 	                {
             	        System.out.print("> Enter a nickname: ");
-            	        String nickname = in.readLine();
+            	        String nickname = ProgramState.in.readLine();
             	        nick.setNickname(nickname);
                 	    
                 		nick.executeCommand();
@@ -104,9 +104,9 @@ public class DistributedSecureChannel
                 	else if ((create = Create.parse(line)) != null)
 	                {
                 		System.out.print("> Enter the channel name: ");
-                		String channelName = in.readLine();
+                		String channelName = ProgramState.in.readLine();
                 		System.out.print("> Enter the channel passphrase: ");
-                		String passphrase = in.readLine();
+                		String passphrase = ProgramState.in.readLine();
                 		create.setChannel(channelName);
                 		create.setPassphrase(passphrase);
                 		
@@ -127,7 +127,7 @@ public class DistributedSecureChannel
                 	else if ((join = Join.parse(line)) != null)
                 	{
                         System.out.print("> Enter the channel to join: ");
-                        String channelName = in.readLine();
+                        String channelName = ProgramState.in.readLine();
                         join.setChannel(channelName);
                         
                         if (join.executeCommand())
@@ -145,7 +145,7 @@ public class DistributedSecureChannel
                 	else if ((request = Request.parse(line)) != null)
 	                {
                 		System.out.print("> Enter authentication: ");
-                		String passphrase = in.readLine();
+                		String passphrase = ProgramState.in.readLine();
                 		request.setPassphrase(passphrase);
                 		
                 		if (request.executeCommand())
@@ -181,8 +181,16 @@ public class DistributedSecureChannel
                 }
                 else
                 {
-                    // Send the message
-                    sendController.send(MessageType.ENCRYPTED_MESSAGE, ProgramState.nick + "> " + line, null);
+                    // Authentication prompt
+                    if (ProgramState.AUTHENTICATION_DECISION)
+                    {
+                        
+                    }
+                    else
+                    {
+                        // Send the message
+                        sendController.send(MessageType.ENCRYPTED_MESSAGE, ProgramState.nick + "> " + line, null);
+                    }
                 }
             }
             catch (Exception e)

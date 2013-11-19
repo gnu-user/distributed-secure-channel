@@ -53,7 +53,6 @@ public class ReceiveController extends ReceiverAdapter
     public void receive(Message msg)
     {
         /* Ignore any messages from blocked senders */
-        System.out.println(msg.getSrc());
         if (ProgramState.blacklist.contains(msg.getSrc()))
         {
             System.out.println("BANNED: " + msg.getSrc());
@@ -125,12 +124,44 @@ public class ReceiveController extends ReceiverAdapter
         // If authenticated state
         // Prompt user to authenticate
         ProgramState.AUTHENTICATION_DECISION = true;
-        BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+                
+        String choice = "";
+        
+        /*try
+        {
+            ProgramState.in.close();
+            System.out.flush();
+            //ProgramState.in = new BufferedReader(new InputStreamReader(System.in));
+        }
+        catch (IOException io)
+        {
+            System.out.println("something wrong");
+        }*/
+        
         
         System.out.println("> Received key exchange from: " + src.toString());
-        System.out.print("> Verify/Reject/Ignore (V/R/I): ");
+        System.out.print("> Verify/Reject/Ignore (V/R/I): "); 
+        //ProgramState.in.mark(0);
+        //ProgramState.in.ready();
+        //choice = ProgramState.in.readLine().toLowerCase().trim();
         
-        String choice = in.readLine().toLowerCase().trim();
+       
+        while(!flagSet)
+        {
+            synchronized(this)
+            {
+                try
+                {
+                    this.wait();
+                }
+                catch (InterruptedException e)
+                {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            }
+        }
+        
         System.out.println("GOT IT: " + choice);
         
         if (choice.equals("v"))
@@ -172,9 +203,7 @@ public class ReceiveController extends ReceiverAdapter
                 }
             }
         }
-        
-        // do nothing if ignore
-        System.out.flush();
+        ProgramState.in.reset();
     }
 
     /**
