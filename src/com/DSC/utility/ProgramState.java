@@ -49,4 +49,6 @@ public abstract class ProgramState
     public static byte[] symmetricKey;
     public static String passphrase;
     public static ISAACRandomGenerator IVEngine;
+    
+    public static InputSymbol symbol = new InputSymbol();
 }

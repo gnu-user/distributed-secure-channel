@@ -145,33 +145,19 @@ public class ReceiveController extends ReceiverAdapter
         //ProgramState.in.ready();
         //choice = ProgramState.in.readLine().toLowerCase().trim();
         
-       
-        while(!flagSet)
-        {
-            synchronized(this)
-            {
-                try
-                {
-                    this.wait();
-                }
-                catch (InterruptedException e)
-                {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-            }
-        }
+        
+        choice = waitForInput();
         
         System.out.println("GOT IT: " + choice);
         
-        if (choice.equals("v"))
+        if (choice.equalsIgnoreCase("v"))
         {
             if (ECDSA.verifyAuthRequest(pubKey, ProgramState.passphrase, authRequest.getSignature()))
             {
                 System.out.println("> Signature valid.");
                 System.out.print("> Trust new member? (Y/N): ");
                 
-                if (ProgramState.in.readLine().toLowerCase().equals("y"))
+                if (waitForInput().equalsIgnoreCase("y"))
                 {
                     // Update list of trusted members
                     System.out.println("> Updating list of trusted members...");
@@ -196,14 +182,36 @@ public class ReceiveController extends ReceiverAdapter
                 System.out.print("> Ignore sender? (Y/N): ");
                 
                 // ban if reject
-                if (ProgramState.in.readLine().toLowerCase().trim().equals("y"))
+                if (waitForInput().equalsIgnoreCase("y"))
                 {
                     ProgramState.blacklist.add(src);    
                     System.out.println("> Sender ignored permanently.");
                 }
+                
+                //TODO shouldn't you change state?
             }
         }
-        ProgramState.in.reset();
+        //ProgramState.in.reset();
+    }
+    
+    private String waitForInput()
+    {
+    	while(!ProgramState.symbol.getInputWait() && ProgramState.symbol.getInput() == null)
+        {
+            synchronized(ProgramState.symbol) {
+                try {
+                	ProgramState.symbol.wait();
+                }
+                catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    	ProgramState.symbol.setInputWait();
+    	String value = ProgramState.symbol.getInput();
+    	ProgramState.symbol.resetInput();
+    	
+    	return value;
     }
 
     /**

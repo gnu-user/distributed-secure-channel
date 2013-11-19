@@ -184,7 +184,7 @@ public class DistributedSecureChannel
                     // Authentication prompt
                     if (ProgramState.AUTHENTICATION_DECISION)
                     {
-                        
+                    	ProgramState.symbol.setInputReady(line);
                     }
                     else
                     {
