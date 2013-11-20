@@ -106,6 +106,9 @@ public class SendController
         /* Send the message using JGroups */
         Message msg = new Message(null, null, secureMsg);
         ProgramState.channel.send(msg);
+        
+        /* Update the program state */
+        ProgramState.AUTHENTICATION_REQUEST = true;
     }
 
     /**
@@ -158,6 +161,9 @@ public class SendController
         /* Send the message using JGroups */
         Message msg = new Message(null, null, secureMsg);
         ProgramState.channel.send(msg);
+        
+        /* Update the program state */
+        ProgramState.KEY_EXCHANGE_REQUEST = true;
     }
 
     /**
@@ -170,7 +176,7 @@ public class SendController
     {
         /* Encrypt the key with the other person's public key */
         byte[] encryptedKey = Cipher.encryptKey(
-                ProgramState.publicKey, 
+                ProgramState.privateKey, 
                 (ECPublicKeyParameters) authKey, 
                 ProgramState.passphrase, 
                 ProgramState.symmetricKey);
@@ -179,7 +185,7 @@ public class SendController
         BigInteger[] signature = ECDSA.signKey(
                 ProgramState.privateKey, 
                 ProgramState.publicKey, 
-                ProgramState.symmetricKey,
+                encryptedKey,
                 ProgramState.passphrase);
         
         /* Send the ENCRYPTED key */
