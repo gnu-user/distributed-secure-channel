@@ -70,7 +70,7 @@ public class DistributedSecureChannel
     {
         ProgramState.in = new BufferedReader(new InputStreamReader(System.in));
         
-        while (! ProgramState.AUTHENTICATION_DECISION)
+        while (true)
         {
             try
             {
@@ -160,13 +160,14 @@ public class DistributedSecureChannel
 		                    // Send out the request to join
 		                    sendController.send(MessageType.AUTH_REQUEST, null, null);
 		                    
-		                    // Wait 10 seconds to see if authenticated
-		                    Thread.sleep(20000);
+		                    // Wait 30 seconds to see if authenticated
+		                    Thread.sleep(30000);
 		                    
 		                    // Send key exchange request if authenticated
 		                    if (ProgramState.AUTHENTICATED)
 		                    {
-		                        sendController.send(MessageType.AUTH_REQUEST, null, null);
+		                        System.out.println("> Requesting network key...");
+		                        sendController.send(MessageType.KEY_EXCHANGE, null, null);
 		                    }
 		                    else
 		                    {
