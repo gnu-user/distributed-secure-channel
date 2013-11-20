@@ -45,7 +45,7 @@ import com.DSC.message.MessageType;
 import com.DSC.utility.ProgramState;
 import com.google.common.collect.ConcurrentHashMultiset;
 
-public class DistributedSecureChannel
+public class SecureChannel
 {
     private static ReceiveController receiveController;
     private static SendController sendController;
