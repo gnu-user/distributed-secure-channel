@@ -39,16 +39,16 @@ public abstract class ProgramState
     public volatile static boolean KEY_RECEIVED = false;
     public volatile static boolean AUTHENTICATION_DECISION = false;
     public volatile static boolean AUTHENTICATION_ACKNOWLEDGE = false;
-    public static JChannel channel;
-    public static String nick = "anonymous";
+    public volatile static JChannel channel;
+    public volatile static String nick = "anonymous";
     public volatile static BufferedReader in;
-    public static ConcurrentHashMultiset<ECPublicKeyParameters> trustedKeys;
-    public static ConcurrentHashMultiset<Address> blacklist;
-    public static ECPublicKeyParameters publicKey;
-    public static ECPrivateKeyParameters privateKey;
-    public static byte[] symmetricKey;
-    public static String passphrase;
-    public static ISAACRandomGenerator IVEngine;
+    public volatile static ConcurrentHashMultiset<String> trustedKeys;
+    public volatile static ConcurrentHashMultiset<Address> blacklist;
+    public volatile static ECPublicKeyParameters publicKey;
+    public volatile static ECPrivateKeyParameters privateKey;
+    public volatile static byte[] symmetricKey;
+    public volatile static String passphrase;
+    public volatile static ISAACRandomGenerator IVEngine;
     
-    public static InputSymbol symbol = new InputSymbol();
+    public volatile static InputSymbol symbol = new InputSymbol();
 }
