@@ -26,12 +26,14 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.security.SecureRandom;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.net.ntp.NTPUDPClient;
 import org.apache.commons.net.ntp.TimeInfo;
 import org.bouncycastle.crypto.engines.ISAACEngine;
 import org.bouncycastle.crypto.params.ECPrivateKeyParameters;
 import org.bouncycastle.crypto.params.ECPublicKeyParameters;
+import org.jgroups.Address;
 import org.jgroups.JChannel;
 import org.joda.time.DateTimeUtils;
 import org.joda.time.format.DateTimeFormat;
@@ -243,14 +245,19 @@ public class SecureChannel
                         String delete = "";
                         
                         /* Remove the current line for prompt */
-                        for (int i = 0; i < new String(ProgramState.nick + "> ").length(); ++i)
+                        for (int i = 0; i < new String(ProgramState.nick + "> " + line).length(); ++i)
                         {
                             delete += "\b";
                         }
                         
                         /* Update the console to show the time message sent and send message */
-                        System.out.println(delete + message);                
-                        sendController.send(MessageType.ENCRYPTED_MESSAGE, message, null);
+                        System.out.println(delete + message);
+                        
+                        /* Send the encrypted message to each trusted contact */
+                        for (Address dest : ProgramState.trustedKeys.values())
+                        {
+                            sendController.send(MessageType.ENCRYPTED_MESSAGE, message, dest);
+                        }
                     }
                 }
             }
@@ -286,7 +293,7 @@ public class SecureChannel
         
         // Create the blacklist and trusted contacts
         ProgramState.blacklist =  ConcurrentHashMultiset.create();
-        ProgramState.trustedKeys = ConcurrentHashMultiset.create();
+        ProgramState.trustedKeys = new ConcurrentHashMap<String, Address>();
         
         // Set the time for the client accurately using a NTP server
         DateTimeUtils.setCurrentMillisOffset(getTimeOffset());
