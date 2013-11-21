@@ -22,13 +22,21 @@
 package com.DSC.client;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.InetAddress;
 import java.security.SecureRandom;
 
+import org.apache.commons.net.ntp.NTPUDPClient;
+import org.apache.commons.net.ntp.TimeInfo;
 import org.bouncycastle.crypto.engines.ISAACEngine;
 import org.bouncycastle.crypto.params.ECPrivateKeyParameters;
 import org.bouncycastle.crypto.params.ECPublicKeyParameters;
 import org.jgroups.JChannel;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeUtils;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 import com.DSC.chat.CommandParser;
 import com.DSC.chat.Create;
@@ -47,6 +55,7 @@ import com.google.common.collect.ConcurrentHashMultiset;
 
 public class SecureChannel
 {
+    private static final String NTP_SERVER = "time-a.nist.gov";   
     private static ReceiveController receiveController;
     private static SendController sendController;
     
@@ -60,6 +69,19 @@ public class SecureChannel
         ProgramState.channel.setDiscardOwnMessages(true);
         ProgramState.channel.setReceiver(receiveController);
         ProgramState.channel.connect(name);
+    }
+    
+    
+    /**
+     * Gets the date time offset for the client using a NTP server
+     * @throws IOException 
+     */
+    private static long getTimeOffset() throws IOException
+    {
+        NTPUDPClient timeClient = new NTPUDPClient();
+        InetAddress inetAddress = InetAddress.getByName(NTP_SERVER);
+        TimeInfo timeInfo = timeClient.getTime(inetAddress);
+        return DateTimeUtils.currentTimeMillis() - timeInfo.getReturnTime();
     }
     
     /**
@@ -219,8 +241,18 @@ public class SecureChannel
                     }
                     else if (ProgramState.AUTHENTICATED)
                     {
-                        // Send the message
-                        sendController.send(MessageType.ENCRYPTED_MESSAGE, ProgramState.nick + "> " + line, null);
+                        String message = ProgramState.fmt.print(DateTimeUtils.currentTimeMillis()) + " " + ProgramState.nick + "> " + line;
+                        String delete = "";
+                        
+                        /* Remove the current line for prompt */
+                        for (int i = 0; i < new String(ProgramState.nick + "> ").length(); ++i)
+                        {
+                            delete += "\b";
+                        }
+                        
+                        /* Update the console to show the time message sent and send message */
+                        System.out.println(delete + message);                
+                        sendController.send(MessageType.ENCRYPTED_MESSAGE, message, null);
                     }
                 }
             }
@@ -237,8 +269,9 @@ public class SecureChannel
     /**
      * @param args
      * @throws InterruptedException 
+     * @throws IOException 
      */
-    public static void main(String[] args) throws InterruptedException
+    public static void main(String[] args) throws InterruptedException, IOException
     {
         // Create their private & public keys
         ECKey key = new ECKey();
@@ -257,12 +290,18 @@ public class SecureChannel
         ProgramState.blacklist =  ConcurrentHashMultiset.create();
         ProgramState.trustedKeys = ConcurrentHashMultiset.create();
         
-        // Set a default nick?
+        // Set the time for the client accurately using a NTP server
+        DateTimeUtils.setCurrentMillisOffset(getTimeOffset());
+        ProgramState.fmt = DateTimeFormat.forPattern("HH:mm:ss");
+        
+        // Set the default nick as anonymouse
+        ProgramState.nick = "anonymous";
+        
         // Initialize ISAACRandomGenerator, set ProgramState.IVEngine
-        // Start eventloop
         receiveController = new ReceiveController();
         sendController = new SendController();
 
+        // Start input event handler loop
         eventLoop();
     }
 }
