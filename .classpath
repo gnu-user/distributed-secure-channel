@@ -2,11 +2,6 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="lib/args4j-2.0.21.jar" sourcepath="lib/args4j-2.0.21-sources.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="jar:file:lib/args4j-2.0.21-javadoc.jar!/"/>
-		</attributes>
-	</classpathentry>
 	<classpathentry kind="lib" path="lib/guava-15.0.jar" sourcepath="lib/guava-15.0-sources.jar">
 		<attributes>
 			<attribute name="javadoc_location" value="jar:file:lib/guava-15.0-javadoc.jar!/"/>
@@ -16,7 +11,13 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="lib" path="lib/bcprov-jdk15on-149.jar">
 		<attributes>
-			<attribute name="javadoc_location" value="jar:file:lib/bcprov-jdk15on-149-javadoc.jar!/"/>
+			<attribute name="javadoc_location" value="jar:file:/home/jon/Source/github/distributed-secure-channel/lib/bcprov-jdk15on-149-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/home/jon/Source/github/distributed-secure-channel/lib/commons-net-3.3.jar" sourcepath="/home/jon/Source/github/distributed-secure-channel/lib/commons-net-3.3-sources.jar"/>
+	<classpathentry kind="lib" path="/home/jon/Source/github/distributed-secure-channel/lib/joda-time-2.3.jar" sourcepath="/home/jon/Source/github/distributed-secure-channel/lib/joda-time-2.3-sources.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/home/jon/Source/github/distributed-secure-channel/lib/joda-time-2.3-javadoc.jar!/"/>
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="output" path="bin"/>
