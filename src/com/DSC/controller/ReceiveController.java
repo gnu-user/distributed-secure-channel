@@ -219,7 +219,7 @@ public class ReceiveController extends ReceiverAdapter
         // Check if in requesting auth state
         if (! ProgramState.AUTHENTICATION_REQUEST)
         {
-            System.out.println("WRONG AUTH ACKNOWLEDGE STATE");
+            //System.out.println("WRONG AUTH ACKNOWLEDGE STATE");
             return;
         }
         
@@ -257,7 +257,7 @@ public class ReceiveController extends ReceiverAdapter
         /* Check if awaiting key request state after acknowledgment */
         if (! (ProgramState.AUTHENTICATED && ProgramState.AUTHENTICATION_ACKNOWLEDGE))
         {
-            System.out.println("WRONG AUTH KEY EXCHANGE HANDLER STATE");
+            //System.out.println("WRONG AUTH KEY EXCHANGE HANDLER STATE");
             return;
         }
         
