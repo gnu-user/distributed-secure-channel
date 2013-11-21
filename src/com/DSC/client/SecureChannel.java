@@ -99,11 +99,12 @@ public class SecureChannel
             	        nick.setNickname(nickname);
                 	    
                 		nick.executeCommand();
-                		System.out.println("> Nickname changed to " + nick.getNick());
+                		System.out.println(Colour.GREEN + "> Nickname changed to " + nick.getNick() + Colour.RESET);
 	                }
                 	else if ((quit = Quit.parse(line)) != null)
                 	{
             			// Returns false if the state was null.
+                	    System.out.println("Goodbye.");
             			quit.executeCommand();
  	                    break;
                 	}
@@ -145,7 +146,7 @@ public class SecureChannel
                         }
                         else
                         {
-                            System.out.println("> Invalid channel name");
+                            System.out.println(Colour.RED + "> Invalid channel name" + Colour.GREEN);
                         }
                 	}
                 	else if ((request = Request.parse(line)) != null)
