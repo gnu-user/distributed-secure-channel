@@ -138,7 +138,7 @@ public class ReceiveController extends ReceiverAdapter
         {
             if (ECDSA.verifyAuthRequest(pubKey, ProgramState.passphrase, authRequest.getSignature()))
             {
-                System.out.println("> Signature valid.");
+                System.out.println(Colour.GREEN + "> Signature valid." + Colour.RESET);
                 System.out.print("> Trust new member? (Y/N): ");
                 
                 if (waitForInput().equalsIgnoreCase("y"))
@@ -151,7 +151,7 @@ public class ReceiveController extends ReceiverAdapter
                     }
                     
                     // Send authenticated acknowledgement msg
-                    System.out.println("> Authenticated member announced.");
+                    System.out.println(Colour.YELLOW + "> Authenticated member announced." + Colour.RESET);
                     SendController sendController = new SendController();
                     sendController.send(MessageType.AUTH_ACKNOWLEDGE, pubKey, null);
                     
@@ -161,14 +161,14 @@ public class ReceiveController extends ReceiverAdapter
             }
             else
             {
-                System.out.println("> Signature invalid.");
+                System.out.println(Colour.RED + "> Signature invalid." + Colour.RESET);
                 System.out.print("> Ignore sender permanently? (Y/N): ");
                 
                 // ban if yes
                 if (waitForInput().equalsIgnoreCase("y"))
                 {
                     ProgramState.blacklist.add(src);    
-                    System.out.println("> Sender ignored permanently.");
+                    System.out.println(Colour.YELLOW + "> Sender ignored permanently." + Colour.RESET);
                 }
             }
         }
@@ -180,7 +180,7 @@ public class ReceiveController extends ReceiverAdapter
             if (waitForInput().equalsIgnoreCase("y"))
             {
                 ProgramState.blacklist.add(src);    
-                System.out.println("> Sender ignored permanently.");
+                System.out.println(Colour.YELLOW + "> Sender ignored permanently." + Colour.RESET);
             }
         }
         
