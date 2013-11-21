@@ -41,6 +41,7 @@ import com.DSC.controller.SendController;
 import com.DSC.crypto.ECKey;
 import com.DSC.crypto.ISAACRandomGenerator;
 import com.DSC.message.MessageType;
+import com.DSC.utility.Colour;
 import com.DSC.utility.ProgramState;
 import com.google.common.collect.ConcurrentHashMultiset;
 
@@ -120,12 +121,12 @@ public class SecureChannel
                 			if (ProgramState.channel == null || !ProgramState.channel.equals(channelName))
                 			{
                 			    join(channelName);                		
-                			    System.out.println("> Channel " + channelName + " created.");
+                			    System.out.println(Colour.GREEN + "> Channel " + channelName + " created successfully." + Colour.RESET);
                 			}
                 		}
                 		else
                 		{
-                			System.out.println("> Channel " + channelName + " has failed to create");
+                			System.out.println(Colour.RED + "> Channel " + channelName + " has failed to create" + Colour.RESET);
                 		}
 	                    
 	                }
@@ -149,6 +150,13 @@ public class SecureChannel
                 	}
                 	else if ((request = Request.parse(line)) != null)
 	                {
+                	    /* Check that they have first joined a channel */
+                	    if (ProgramState.channel == null)
+                	    {
+                	        System.out.println(Colour.RED + "> Error, you must join a channel first." + Colour.RESET);
+                	        continue;
+                	    }
+                	    
                 		System.out.print("> Enter authentication: ");
                 		String passphrase = ProgramState.in.readLine();
                 		request.setPassphrase(passphrase);
@@ -175,21 +183,21 @@ public class SecureChannel
 		                        Thread.sleep(10000);
 		                        if (ProgramState.KEY_RECEIVED)
 		                        {
-		                            System.out.println("> Successfully joined channel.");
+		                            System.out.println(Colour.GREEN + "> Successfully joined channel." + Colour.RESET);
 		                        }
 		                        else
 		                        {
-		                            System.out.println("> No key received, failed to join channel.");
+		                            System.out.println(Colour.RED + "> No key received, failed to join channel." + Colour.RESET);
 		                        }
 		                    }
 		                    else
 		                    {
-		                        System.out.println("> Failed to be authenticated.");
+		                        System.out.println(Colour.RED + "> Failed to be authenticated." + Colour.RESET);
 		                    }
                 		}
                 		else
                 		{
-                			System.out.println("> An unspecified error occurred.");
+                			System.out.println(Colour.RED + "> An unspecified error occurred." + Colour.RESET);
                 		}
 	                }
                 }
