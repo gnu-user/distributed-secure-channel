@@ -59,10 +59,10 @@ public class SendController
                     keyExchangeHandler();
                     break;
                 case KEY:
-                    keyHandler(data);
+                    keyHandler(data, dest);
                     break;
                 case ENCRYPTED_MESSAGE:
-                    encryptedMessageHandler(data);
+                    encryptedMessageHandler(data, dest);
                     break;
                 default:
                     throw new IllegalArgumentException("Invalid message type!");
@@ -169,7 +169,7 @@ public class SendController
      * @throws InvalidCipherTextException
      * @throws Exception
      */
-    private void keyHandler(Object authKey) throws InvalidCipherTextException, Exception
+    private void keyHandler(Object authKey, Address dest) throws InvalidCipherTextException, Exception
     {
         /* Encrypt the key with the other person's public key */
         byte[] encryptedKey = Cipher.encryptKey(
@@ -194,7 +194,7 @@ public class SendController
                 signature);
         
         /* Send the message using JGroups */
-        Message msg = new Message(null, null, secureMsg);
+        Message msg = new Message(dest, null, secureMsg);
         ProgramState.channel.send(msg);
     }
 
@@ -203,7 +203,7 @@ public class SendController
      * @param msg
      * @throws Exception 
      */
-    private void encryptedMessageHandler(Object message) throws Exception
+    private void encryptedMessageHandler(Object message, Address dest) throws Exception
     {
         // Generate another unique IV
         byte[] IV = new byte[12];
@@ -231,7 +231,7 @@ public class SendController
                 HMAC);
         
         /* Send the message using JGroups */
-        Message msg = new Message(null, null, secureMsg);
+        Message msg = new Message(dest, null, secureMsg);
         ProgramState.channel.send(msg);
     }
 }

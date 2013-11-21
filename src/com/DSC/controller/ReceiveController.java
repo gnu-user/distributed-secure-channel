@@ -70,10 +70,10 @@ public class ReceiveController extends ReceiverAdapter
                     authRequestHandler(secureMsg, msg.getSrc());
                     break;
                 case AUTH_ACKNOWLEDGE:
-                    authAcknowledgeHandler(secureMsg);
+                    authAcknowledgeHandler(secureMsg, msg.getSrc());
                     break;
                 case KEY_EXCHANGE:
-                    keyExchangeHandler(secureMsg);
+                    keyExchangeHandler(secureMsg, msg.getSrc());
                     break;
                 case KEY:
                     keyHandler(secureMsg);
@@ -145,9 +145,9 @@ public class ReceiveController extends ReceiverAdapter
                 {
                     // Update list of trusted members
                     System.out.println("> Updating list of trusted members...");
-                    if (! ProgramState.trustedKeys.contains(strPubKey))
+                    if (! ProgramState.trustedKeys.containsKey(strPubKey))
                     {
-                        ProgramState.trustedKeys.add(strPubKey);
+                        ProgramState.trustedKeys.put(strPubKey, src);
                     }
                     
                     // Send authenticated acknowledgement msg
@@ -211,7 +211,7 @@ public class ReceiveController extends ReceiverAdapter
      * 
      * @param msg
      */
-    private void authAcknowledgeHandler(SecureMessage msg)
+    private void authAcknowledgeHandler(SecureMessage msg, Address src)
     {
         //System.out.println("AUTHENTICATION ACKNOWLEDGE RECEIVED!");
         
@@ -236,9 +236,9 @@ public class ReceiveController extends ReceiverAdapter
         if (ECDSA.verifyAuthAcknowledge(pubKey, authKey, ProgramState.passphrase, authAcknowledge.getSignature()))
         {
             // Add the node that acknowledged as trusted (for client requesting access)
-            if (! ProgramState.trustedKeys.contains(strPubKey))
+            if (! ProgramState.trustedKeys.containsKey(strPubKey))
             {
-                ProgramState.trustedKeys.add(strPubKey);
+                ProgramState.trustedKeys.put(strPubKey, src);
             }
             
             ProgramState.AUTHENTICATED = true;
@@ -249,7 +249,7 @@ public class ReceiveController extends ReceiverAdapter
      * 
      * @param msg
      */
-    private void keyExchangeHandler(SecureMessage msg)
+    private void keyExchangeHandler(SecureMessage msg, Address src)
     {
         //System.out.println("KEY EXCHANGE REQUEST RECEIVED!");
         
@@ -274,7 +274,7 @@ public class ReceiveController extends ReceiverAdapter
             System.out.println(key);
         } */
         
-        if (! ProgramState.trustedKeys.contains(strPubKey))
+        if (! ProgramState.trustedKeys.containsKey(strPubKey))
         {
             System.out.println("KEY EXCHANGE FROM UNTRUSTED CLIENT!");
             return;
@@ -287,7 +287,7 @@ public class ReceiveController extends ReceiverAdapter
             // If key already sent by someone stop
             // else send the key
             SendController sendController = new SendController();
-            sendController.send(MessageType.KEY, pubKey, null);
+            sendController.send(MessageType.KEY, pubKey, src);
             
             /* Update the state */
             ProgramState.AUTHENTICATION_ACKNOWLEDGE = false;
@@ -319,7 +319,7 @@ public class ReceiveController extends ReceiverAdapter
         String strPubKey = new String(Hex.encode(key.getPublicKey()));
         
         // If from trusted contact
-        if (ProgramState.trustedKeys.contains(strPubKey))
+        if (ProgramState.trustedKeys.containsKey(strPubKey))
         {
             // Verify key
             if (ECDSA.verifyKey(pubKey, key.getSymmetricKey(), ProgramState.passphrase, key.getSignature()))
