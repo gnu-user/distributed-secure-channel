@@ -50,8 +50,6 @@ public abstract class ECDSA
         System.arraycopy(_pubKey, 0, data, 0, _pubKey.length);
         System.arraycopy(_passphrase, 0, data, _pubKey.length, _passphrase.length);
         
-        System.out.println(new String(Hex.encode(data)));
-
         return sign(priKey, hash(data));
     }
     
@@ -73,8 +71,6 @@ public abstract class ECDSA
         byte[] data = new byte[_pubKey.length + _passphrase.length];
         System.arraycopy(_pubKey, 0, data, 0, _pubKey.length);
         System.arraycopy(_passphrase, 0, data, _pubKey.length, _passphrase.length);
-        
-        System.out.println(new String(Hex.encode(data)));
         
         return verify(pubKey, hash(data), signature);
     }
@@ -216,8 +212,6 @@ public abstract class ECDSA
         digest.update(data, 0, data.length);
         digest.doFinal(hash, 0);
         digest.reset();
-        
-        System.out.println(new String(Hex.encode(hash)));
         
         return hash;
     }
