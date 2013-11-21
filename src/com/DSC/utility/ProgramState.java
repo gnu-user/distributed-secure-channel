@@ -27,21 +27,32 @@ import org.bouncycastle.crypto.params.ECPrivateKeyParameters;
 import org.bouncycastle.crypto.params.ECPublicKeyParameters;
 import org.jgroups.Address;
 import org.jgroups.JChannel;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 import com.DSC.crypto.ISAACRandomGenerator;
 import com.google.common.collect.ConcurrentHashMultiset;
 
 public abstract class ProgramState
 {
+    /* Program message handling states */
     public volatile static boolean AUTHENTICATION_REQUEST = false;
     public volatile static boolean AUTHENTICATED = false;
     public volatile static boolean KEY_EXCHANGE_REQUEST = false;
     public volatile static boolean KEY_RECEIVED = false;
     public volatile static boolean AUTHENTICATION_DECISION = false;
     public volatile static boolean AUTHENTICATION_ACKNOWLEDGE = false;
+    
+    /* Channel */
     public volatile static JChannel channel;
-    public volatile static String nick = "anonymous";
+    public volatile static String nick;
+    
+    /* Input handling */
     public volatile static BufferedReader in;
+    public volatile static InputSymbol symbol = new InputSymbol();
+    
+    /* Channel security: trusted keys, blacklist, and network keys */
     public volatile static ConcurrentHashMultiset<String> trustedKeys;
     public volatile static ConcurrentHashMultiset<Address> blacklist;
     public volatile static ECPublicKeyParameters publicKey;
@@ -50,5 +61,6 @@ public abstract class ProgramState
     public volatile static String passphrase;
     public volatile static ISAACRandomGenerator IVEngine;
     
-    public volatile static InputSymbol symbol = new InputSymbol();
+    /* Network time */
+    public volatile static DateTimeFormatter fmt;
 }
