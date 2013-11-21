@@ -55,7 +55,7 @@ public class ReceiveController extends ReceiverAdapter
         /* Ignore any messages from blocked senders */
         if (ProgramState.blacklist.contains(msg.getSrc()))
         {
-            System.out.println("BANNED: " + msg.getSrc());
+            //System.out.println("BANNED: " + msg.getSrc());
             return;
         }
         
@@ -107,7 +107,7 @@ public class ReceiveController extends ReceiverAdapter
      */
     private void authRequestHandler(SecureMessage msg, Address src) throws IOException
     {
-        System.out.println("AUTHENTICATION REQUEST RECEIVED!");
+        //System.out.println("AUTHENTICATION REQUEST RECEIVED!");
         
         // Check state
         if (! ProgramState.AUTHENTICATED)
@@ -116,7 +116,7 @@ public class ReceiveController extends ReceiverAdapter
         }
                 
         AuthRequest authRequest = (AuthRequest) msg;
-        System.out.println("PUBLIC KEY: " + new String(Hex.encode(authRequest.getPublicKey())));
+        //System.out.println("PUBLIC KEY: " + new String(Hex.encode(authRequest.getPublicKey())));
         //System.out.println(authRequest.getSignature().toString());
         
         ECPublicKeyParameters pubKey = ECGKeyUtil.decodePubKey(authRequest.getPublicKey());
@@ -125,31 +125,14 @@ public class ReceiveController extends ReceiverAdapter
         // If authenticated state
         // Prompt user to authenticate
         ProgramState.AUTHENTICATION_DECISION = true;
-                
-        String choice = "";
-        
-        /*try
-        {
-            ProgramState.in.close();
-            System.out.flush();
-            //ProgramState.in = new BufferedReader(new InputStreamReader(System.in));
-        }
-        catch (IOException io)
-        {
-            System.out.println("something wrong");
-        }*/
-        
-        
-        System.out.println("> Received key exchange from: " + src.toString());
-        System.out.println("> Verify/Reject/Ignore (V/R/I): "); 
+                        
+        System.out.println("\n> Received key exchange from: " + src.toString());
+        System.out.print("> Verify/Reject/Ignore (V/R/I): "); 
         //ProgramState.in.mark(0);
         //ProgramState.in.ready();
         //choice = ProgramState.in.readLine().toLowerCase().trim();
         
-        
-        choice = waitForInput();
-        
-        System.out.println("GOT IT: " + choice);
+        String choice = waitForInput();
         
         if (choice.equalsIgnoreCase("v"))
         {
@@ -164,7 +147,6 @@ public class ReceiveController extends ReceiverAdapter
                     System.out.println("> Updating list of trusted members...");
                     if (! ProgramState.trustedKeys.contains(strPubKey))
                     {
-                        System.out.println("added public key");
                         ProgramState.trustedKeys.add(strPubKey);
                     }
                     
@@ -222,7 +204,7 @@ public class ReceiveController extends ReceiverAdapter
      */
     private void authAcknowledgeHandler(SecureMessage msg)
     {
-        System.out.println("AUTHENTICATION ACKNOWLEDGE RECEIVED!");
+        //System.out.println("AUTHENTICATION ACKNOWLEDGE RECEIVED!");
         
         // Check if in requesting auth state
         if (! ProgramState.AUTHENTICATION_REQUEST)
@@ -232,10 +214,10 @@ public class ReceiveController extends ReceiverAdapter
         }
         
         AuthAcknowledge authAcknowledge = (AuthAcknowledge) msg;
-        System.out.println(new String(Hex.encode(authAcknowledge.getPublicKey())));
-        System.out.println(new String(Hex.encode(authAcknowledge.getAuthKey())));
-        System.out.println(authAcknowledge.getSignature()[0]);
-        System.out.println(authAcknowledge.getSignature()[1]);
+        //System.out.println(new String(Hex.encode(authAcknowledge.getPublicKey())));
+        //System.out.println(new String(Hex.encode(authAcknowledge.getAuthKey())));
+        //System.out.println(authAcknowledge.getSignature()[0]);
+        //System.out.println(authAcknowledge.getSignature()[1]);
         
         ECPublicKeyParameters pubKey = ECGKeyUtil.decodePubKey(authAcknowledge.getPublicKey());
         ECPublicKeyParameters authKey = ECGKeyUtil.decodePubKey(authAcknowledge.getAuthKey());
@@ -260,7 +242,7 @@ public class ReceiveController extends ReceiverAdapter
      */
     private void keyExchangeHandler(SecureMessage msg)
     {
-        System.out.println("KEY EXCHANGE REQUEST RECEIVED!");
+        //System.out.println("KEY EXCHANGE REQUEST RECEIVED!");
         
         /* Check if awaiting key request state after acknowledgment */
         if (! (ProgramState.AUTHENTICATED && ProgramState.AUTHENTICATION_ACKNOWLEDGE))
@@ -270,18 +252,18 @@ public class ReceiveController extends ReceiverAdapter
         }
         
         KeyExchange keyExchange = (KeyExchange) msg;
-        System.out.println("PUBLIC KEY: " + new String(Hex.encode(keyExchange.getPublicKey())));
-        System.out.println(keyExchange.getSignature()[0]);
-        System.out.println(keyExchange.getSignature()[1]);
+        //System.out.println("PUBLIC KEY: " + new String(Hex.encode(keyExchange.getPublicKey())));
+        //System.out.println(keyExchange.getSignature()[0]);
+        //System.out.println(keyExchange.getSignature()[1]);
         
         ECPublicKeyParameters pubKey = ECGKeyUtil.decodePubKey(keyExchange.getPublicKey());
         String strPubKey = new String(Hex.encode(keyExchange.getPublicKey()));
         
-        /* Check if key received is from trusted */
+        /* Check if key received is from trusted
         for (String key : ProgramState.trustedKeys)
         {
             System.out.println(key);
-        }
+        } */
         
         if (! ProgramState.trustedKeys.contains(strPubKey))
         {
@@ -310,7 +292,7 @@ public class ReceiveController extends ReceiverAdapter
      */
     private void keyHandler(SecureMessage msg) throws InvalidCipherTextException
     {
-        System.out.println("KEY RECEIVED!");
+        //System.out.println("KEY RECEIVED!");
         
         // Check state, if awaiting key exchange
         if (! (ProgramState.AUTHENTICATED && ProgramState.KEY_EXCHANGE_REQUEST))
@@ -319,10 +301,10 @@ public class ReceiveController extends ReceiverAdapter
         }
         
         Key key = (Key) msg;
-        System.out.println(new String(Hex.encode(key.getPublicKey())));
-        System.out.println(new String(Hex.encode(key.getSymmetricKey())));
-        System.out.println(key.getSignature()[0]);
-        System.out.println(key.getSignature()[1]);
+        //System.out.println(new String(Hex.encode(key.getPublicKey())));
+        //System.out.println(new String(Hex.encode(key.getSymmetricKey())));
+        //System.out.println(key.getSignature()[0]);
+        //System.out.println(key.getSignature()[1]);
         
         ECPublicKeyParameters pubKey = ECGKeyUtil.decodePubKey(key.getPublicKey());
         String strPubKey = new String(Hex.encode(key.getPublicKey()));
@@ -333,7 +315,7 @@ public class ReceiveController extends ReceiverAdapter
             // Verify key
             if (ECDSA.verifyKey(pubKey, key.getSymmetricKey(), ProgramState.passphrase, key.getSignature()))
             {
-                System.out.println("DECYPTING SYMMETRIC KEY");
+                //System.out.println("DECYPTING SYMMETRIC KEY");
                 
                 /* Decrypt the symmetric key */
                 byte[] deccryptedKey = Cipher.decryptKey(
@@ -364,16 +346,15 @@ public class ReceiveController extends ReceiverAdapter
             return;
         }
         
-        System.out.println("ENCRYPTED MESSAGE RECEIVED");
+        //System.out.println("ENCRYPTED MESSAGE RECEIVED");
         
         EncryptedMessage encryptedMessage = (EncryptedMessage) msg;
-        System.out.println(new String(Hex.encode(encryptedMessage.getIV())));
-        System.out.println(new String(Hex.encode(encryptedMessage.getMessage())));
-        System.out.println(new String(Hex.encode(encryptedMessage.getHMAC()[0].toByteArray())));
+        //System.out.println(new String(Hex.encode(encryptedMessage.getIV())));
+        //System.out.println(new String(Hex.encode(encryptedMessage.getMessage())));
+        //System.out.println(new String(Hex.encode(encryptedMessage.getHMAC()[0].toByteArray())));
         
         
         /* Display the decrypted message */
-        
         if (Cipher.verifyHMAC(ProgramState.passphrase, encryptedMessage.getHMAC(), 
                 encryptedMessage.getMessage()))
         {            
@@ -383,7 +364,7 @@ public class ReceiveController extends ReceiverAdapter
                     encryptedMessage.getIV(), 
                     encryptedMessage.getMessage());
             
-            System.out.println("> " + new String(message));
+            System.out.println(new String(message));
         }
     }
 }

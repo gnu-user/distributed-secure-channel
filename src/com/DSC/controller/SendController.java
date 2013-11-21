@@ -221,9 +221,9 @@ public class SendController
 		// Generate HMAC for the message
         BigInteger[] HMAC = Cipher.generateHMAC(ProgramState.passphrase, encryptedMessage);
         
-        System.out.println("SENDING ENCRYPTED MESSAGE");
-        System.out.println(new String(Hex.encode(encryptedMessage)));
-        System.out.println(new String(Hex.encode(HMAC[0].toByteArray())));
+        //System.out.println("SENDING ENCRYPTED MESSAGE");
+        //System.out.println(new String(Hex.encode(encryptedMessage)));
+        //System.out.println(new String(Hex.encode(HMAC[0].toByteArray())));
         
 		// Send the encrypted message with HMAC
         SecureMessage secureMsg = AbstractMessageFactory.createMessage(
