@@ -22,6 +22,7 @@
 package com.DSC.utility;
 
 import java.io.BufferedReader;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.bouncycastle.crypto.params.ECPrivateKeyParameters;
 import org.bouncycastle.crypto.params.ECPublicKeyParameters;
@@ -51,7 +52,7 @@ public abstract class ProgramState
     public volatile static InputSymbol symbol = new InputSymbol();
     
     /* Channel security: trusted keys, blacklist, and network keys */
-    public volatile static ConcurrentHashMultiset<String> trustedKeys;
+    public volatile static ConcurrentHashMap<String, Address> trustedKeys;
     public volatile static ConcurrentHashMultiset<Address> blacklist;
     public volatile static ECPublicKeyParameters publicKey;
     public volatile static ECPrivateKeyParameters privateKey;
