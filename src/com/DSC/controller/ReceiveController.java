@@ -41,6 +41,7 @@ import com.DSC.message.Key;
 import com.DSC.message.KeyExchange;
 import com.DSC.message.MessageType;
 import com.DSC.message.SecureMessage;
+import com.DSC.utility.Colour;
 import com.DSC.utility.ProgramState;
 
 public class ReceiveController extends ReceiverAdapter
@@ -92,7 +93,7 @@ public class ReceiveController extends ReceiverAdapter
         }
         catch (InvalidCipherTextException cte)
         {
-            cte.printStackTrace();
+            System.out.println(Colour.RED + cte.getMessage() + Colour.RESET);
         }
         catch (Exception e)
         {
