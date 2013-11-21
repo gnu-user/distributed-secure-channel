@@ -37,7 +37,6 @@ import org.bouncycastle.crypto.macs.HMac;
 import org.bouncycastle.crypto.params.IESParameters;
 import org.bouncycastle.crypto.params.KeyParameter;
 import org.bouncycastle.crypto.params.ParametersWithIV;
-import org.bouncycastle.util.encoders.Hex;
 
 public abstract class Cipher
 {

@@ -25,7 +25,6 @@ import java.math.BigInteger;
 
 import org.bouncycastle.crypto.InvalidCipherTextException;
 import org.bouncycastle.crypto.params.ECPublicKeyParameters;
-import org.bouncycastle.util.encoders.Hex;
 import org.jgroups.Address;
 import org.jgroups.Message;
 

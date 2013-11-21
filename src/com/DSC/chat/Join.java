@@ -23,8 +23,6 @@ package com.DSC.chat;
 
 import java.util.regex.Pattern;
 
-import com.DSC.utility.ProgramState;
-
 public class Join extends CommandParser
 {
     private String channel;

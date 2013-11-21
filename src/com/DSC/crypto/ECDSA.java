@@ -26,7 +26,6 @@ import java.math.BigInteger;
 import org.bouncycastle.crypto.CipherParameters;
 import org.bouncycastle.crypto.digests.SHA256Digest;
 import org.bouncycastle.crypto.signers.ECDSASigner;
-import org.bouncycastle.util.encoders.Hex;
 import org.bouncycastle.crypto.Digest;
 
 public abstract class ECDSA
