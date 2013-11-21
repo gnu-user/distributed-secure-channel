@@ -170,8 +170,8 @@ public class SecureChannel
 		                    // Send out the request to join
 		                    sendController.send(MessageType.AUTH_REQUEST, null, null);
 		                    
-		                    // Wait maximum of 30 seconds to see if authenticated
-		                    for (int i = 0; (! ProgramState.AUTHENTICATION_DECISION && i < 30); ++i)
+		                    // Wait maximum of 20 seconds to see if authenticated
+		                    for (int i = 0; (! ProgramState.AUTHENTICATED && i < 20); ++i)
 		                    {
 		                        System.out.print(".");
 		                        Thread.sleep(1000);
@@ -180,18 +180,18 @@ public class SecureChannel
 		                    // Send key exchange request if authenticated
 		                    if (ProgramState.AUTHENTICATED)
 		                    {
-		                        System.out.println("> Requesting network key...");
+		                        System.out.println("\n> Requesting network key...");
 		                        sendController.send(MessageType.KEY_EXCHANGE, null, null);
 		                        
 		                        // Wait a maximum of 10 seconds to see if key received
-		                        for (int i = 0; (! ProgramState.AUTHENTICATION_DECISION && i < 10); ++i)
+		                        for (int i = 0; (! ProgramState.KEY_RECEIVED && i < 10); ++i)
 	                            {
 	                                System.out.print(".");
 	                                Thread.sleep(1000);
 	                            }
 		                        if (ProgramState.KEY_RECEIVED)
 		                        {
-		                            System.out.println(Colour.GREEN + "> Successfully joined channel." + Colour.RESET);
+		                            System.out.println(Colour.GREEN + "\n> Successfully joined channel." + Colour.RESET);
 		                        }
 		                        else
 		                        {
