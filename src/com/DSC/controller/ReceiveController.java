@@ -156,26 +156,35 @@ public class ReceiveController extends ReceiverAdapter
                     sendController.send(MessageType.AUTH_ACKNOWLEDGE, pubKey, null);
                     
                     // Update state
-                    ProgramState.AUTHENTICATION_DECISION = false;
                     ProgramState.AUTHENTICATION_ACKNOWLEDGE = true;
                 }
             }
             else
             {
                 System.out.println("> Signature invalid.");
-                System.out.print("> Ignore sender? (Y/N): ");
+                System.out.print("> Ignore sender permanently? (Y/N): ");
                 
-                // ban if reject
+                // ban if yes
                 if (waitForInput().equalsIgnoreCase("y"))
                 {
                     ProgramState.blacklist.add(src);    
                     System.out.println("> Sender ignored permanently.");
                 }
-                
-                //TODO shouldn't you change state?
             }
         }
-        //ProgramState.in.reset();
+        else if (choice.equalsIgnoreCase("i"))
+        {
+            System.out.print("> Ignore sender permanently? (Y/N): ");
+            
+            // ban if yes
+            if (waitForInput().equalsIgnoreCase("y"))
+            {
+                ProgramState.blacklist.add(src);    
+                System.out.println("> Sender ignored permanently.");
+            }
+        }
+        
+        ProgramState.AUTHENTICATION_DECISION = false;
     }
     
     private String waitForInput()
