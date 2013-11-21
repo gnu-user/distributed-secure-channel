@@ -74,6 +74,7 @@ public class SecureChannel
             try
             {
                 System.out.flush();
+                
                 /* Don't display the username prompt when authenticating */
                 if (! ProgramState.AUTHENTICATION_DECISION)
                 {
@@ -97,7 +98,7 @@ public class SecureChannel
             	        nick.setNickname(nickname);
                 	    
                 		nick.executeCommand();
-                		System.out.println("> User nick changed to " + nick.getNick());
+                		System.out.println("> Nickname changed to " + nick.getNick());
 	                }
                 	else if ((quit = Quit.parse(line)) != null)
                 	{
@@ -153,18 +154,15 @@ public class SecureChannel
                 		request.setPassphrase(passphrase);
                 		
                 		if (request.executeCommand())
-                		{
-                		
-	                		System.out.println("> Signing key...");
-	                		//TODO sign key
-	                		
+                		{                		
+	                		System.out.println("> Signing key...");	                		
 	                		System.out.println("> Requesting access...");
 	                		//TODO request access (with timeout)
 	                		
 		                    // Send out the request to join
 		                    sendController.send(MessageType.AUTH_REQUEST, null, null);
 		                    
-		                    // Wait 30 seconds to see if authenticated
+		                    // Wait maximum of 30 seconds to see if authenticated
 		                    Thread.sleep(30000);
 		                    
 		                    // Send key exchange request if authenticated
@@ -238,18 +236,9 @@ public class SecureChannel
         ProgramState.IVEngine = new ISAACRandomGenerator(new ISAACEngine());
         ProgramState.IVEngine.init(seed);
         
-        /*
-        // Set the symmetric key
-        ProgramState.symmetricKey = "Is it 16 bytes?!".getBytes();
-        
-        // Set the passphrase
-        ProgramState.passphrase = "test";
-        */
-        
         // Create the blacklist and trusted contacts
         ProgramState.blacklist =  ConcurrentHashMultiset.create();
         ProgramState.trustedKeys = ConcurrentHashMultiset.create();
-        
         
         // Set a default nick?
         // Initialize ISAACRandomGenerator, set ProgramState.IVEngine

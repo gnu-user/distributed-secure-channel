@@ -87,9 +87,7 @@ public class SendController
      */
     private void authRequestHandler() throws Exception
     {
-        /* Generate the signature for the message */
-        System.out.println(ProgramState.passphrase);
-        
+        /* Generate the signature for the message */        
         BigInteger[] signature = ECDSA.signAuthRequest(
                 ProgramState.privateKey, 
                 ProgramState.publicKey, 
