@@ -71,8 +71,9 @@ public class Create extends CommandParser {
 		ProgramState.symmetricKey = symmetricKey;
 		ProgramState.passphrase = this.passphrase;
 		
-		// Creator of channel is authenticated
+		// Creator of channel is authenticated and has created the key
 		ProgramState.AUTHENTICATED = true;
+		ProgramState.KEY_RECEIVED = true;
 		
 		return true;
 	}
