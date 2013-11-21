@@ -364,7 +364,15 @@ public class ReceiveController extends ReceiverAdapter
                     encryptedMessage.getIV(), 
                     encryptedMessage.getMessage());
             
-            System.out.println(new String(message));
+            /* Remove the current line for prompt */
+            String delete = "";
+            for (int i = 0; i < new String(ProgramState.nick + "> ").length(); ++i)
+            {
+                delete += "\b";
+            }
+            
+            System.out.println(delete + new String(message));
+            System.out.print(ProgramState.nick + "> ");
         }
     }
 }
