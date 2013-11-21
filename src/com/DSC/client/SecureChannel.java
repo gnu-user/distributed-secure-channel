@@ -121,12 +121,12 @@ public class SecureChannel
             	        nick.setNickname(nickname);
                 	    
                 		nick.executeCommand();
-                		System.out.println(Colour.GREEN + "> Nickname changed to " + nick.getNick() + Colour.RESET);
+                		System.out.println(Colour.YELLOW + "> Nickname changed to " + nick.getNick() + Colour.RESET);
 	                }
                 	else if ((quit = Quit.parse(line)) != null)
                 	{
             			// Returns false if the state was null.
-                	    System.out.println("Goodbye.");
+                	    System.out.println(Colour.YELLOW + "Goodbye." + Colour.RESET);
             			quit.executeCommand();
  	                    break;
                 	}
@@ -241,7 +241,8 @@ public class SecureChannel
                     }
                     else if (ProgramState.AUTHENTICATED)
                     {
-                        String message = ProgramState.fmt.print(DateTimeUtils.currentTimeMillis()) + " " + ProgramState.nick + "> " + line;
+                        String message = Colour.BLUE + ProgramState.fmt.print(DateTimeUtils.currentTimeMillis()) + Colour.RESET + 
+                                " " + ProgramState.nick + "> " + line;
                         String delete = "";
                         
                         /* Remove the current line for prompt */
@@ -251,7 +252,7 @@ public class SecureChannel
                         }
                         
                         /* Update the console to show the time message sent and send message */
-                        System.out.println(delete + message);
+                        System.out.println(message);
                         
                         /* Send the encrypted message to each trusted contact */
                         for (Address dest : ProgramState.trustedKeys.values())
