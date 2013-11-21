@@ -188,9 +188,6 @@ public abstract class Cipher
         /* Convert the received HMAC to a byte representation */
         recHMAC = HMAC[0].toByteArray();
         
-        System.out.println("HMAC EXP: " + new String(Hex.encode(expHMAC)));
-        System.out.println("HMAC REC: " + new String(Hex.encode(recHMAC)));
-        
         /* Compare the HMAC received to the expected HMAC */
         if (Arrays.equals(expHMAC, recHMAC))
         {
