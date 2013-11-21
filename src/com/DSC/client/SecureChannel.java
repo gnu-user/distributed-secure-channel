@@ -22,7 +22,6 @@
 package com.DSC.client;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.security.SecureRandom;
 
@@ -75,7 +74,12 @@ public class SecureChannel
             try
             {
                 System.out.flush();
-                System.out.print(ProgramState.nick + "> ");
+                /* Don't display the username prompt when authenticating */
+                if (! ProgramState.AUTHENTICATION_DECISION)
+                {
+                    System.out.print(ProgramState.nick + "> ");
+                }
+                
                 String line = ProgramState.in.readLine();
                 
                 if (CommandParser.isCommand(line))
@@ -168,10 +172,21 @@ public class SecureChannel
 		                    {
 		                        System.out.println("> Requesting network key...");
 		                        sendController.send(MessageType.KEY_EXCHANGE, null, null);
+		                        
+		                        // Wait 10 seconds to see if key received
+		                        Thread.sleep(10000);
+		                        if (ProgramState.KEY_RECEIVED)
+		                        {
+		                            System.out.println("> Successfully joined channel.");
+		                        }
+		                        else
+		                        {
+		                            System.out.println("> No key received, failed to join channel.");
+		                        }
 		                    }
 		                    else
 		                    {
-		                        System.out.println("No key received, failed to join channel.");
+		                        System.out.println("> Failed to be authenticated.");
 		                    }
                 		}
                 		else
@@ -187,7 +202,7 @@ public class SecureChannel
                     {
                     	ProgramState.symbol.setInputReady(line);
                     }
-                    else
+                    else if (ProgramState.AUTHENTICATED)
                     {
                         // Send the message
                         sendController.send(MessageType.ENCRYPTED_MESSAGE, ProgramState.nick + "> " + line, null);
@@ -244,5 +259,4 @@ public class SecureChannel
 
         eventLoop();
     }
-
 }
