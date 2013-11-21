@@ -171,7 +171,11 @@ public class SecureChannel
 		                    sendController.send(MessageType.AUTH_REQUEST, null, null);
 		                    
 		                    // Wait maximum of 30 seconds to see if authenticated
-		                    Thread.sleep(30000);
+		                    for (int i = 0; (! ProgramState.AUTHENTICATION_DECISION && i < 30); ++i)
+		                    {
+		                        System.out.print(".");
+		                        Thread.sleep(1000);
+		                    }
 		                    
 		                    // Send key exchange request if authenticated
 		                    if (ProgramState.AUTHENTICATED)
@@ -179,20 +183,24 @@ public class SecureChannel
 		                        System.out.println("> Requesting network key...");
 		                        sendController.send(MessageType.KEY_EXCHANGE, null, null);
 		                        
-		                        // Wait 10 seconds to see if key received
-		                        Thread.sleep(10000);
+		                        // Wait a maximum of 10 seconds to see if key received
+		                        for (int i = 0; (! ProgramState.AUTHENTICATION_DECISION && i < 10); ++i)
+	                            {
+	                                System.out.print(".");
+	                                Thread.sleep(1000);
+	                            }
 		                        if (ProgramState.KEY_RECEIVED)
 		                        {
 		                            System.out.println(Colour.GREEN + "> Successfully joined channel." + Colour.RESET);
 		                        }
 		                        else
 		                        {
-		                            System.out.println(Colour.RED + "> No key received, failed to join channel." + Colour.RESET);
+		                            System.out.println(Colour.RED + "\n> No key received, failed to join channel." + Colour.RESET);
 		                        }
 		                    }
 		                    else
 		                    {
-		                        System.out.println(Colour.RED + "> Failed to be authenticated." + Colour.RESET);
+		                        System.out.println(Colour.RED + "\n> Failed to be authenticated." + Colour.RESET);
 		                    }
                 		}
                 		else
