@@ -350,7 +350,7 @@ public class ReceiveController extends ReceiverAdapter
             throws InvalidCipherTextException
     {
         /* Check that in a valid state */
-        if (! ProgramState.AUTHENTICATED)
+        if (! (ProgramState.AUTHENTICATED && ProgramState.KEY_RECEIVED))
         {
             return;
         }
