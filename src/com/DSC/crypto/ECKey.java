@@ -47,6 +47,7 @@ public class ECKey
 		this.keyGenParam = new ECKeyGenerationParameters(param, new SecureRandom());
 	}
 
+	
 	/**
 	 * ECKey object constructor, uses the default key domain parameters
 	 */
@@ -59,6 +60,7 @@ public class ECKey
        this.keyGenParam = new ECKeyGenerationParameters(param.getECDomainParam(), new SecureRandom());
 	}
 
+	
 	/**
 	 * Wrapper for AsymmetricCipherKeyPairGenerator init() and generateKeyPair()
 	 * function which initializes the elliptic curve and generates a keypair

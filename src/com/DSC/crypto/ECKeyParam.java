@@ -63,6 +63,7 @@ public class ECKeyParam implements CipherParameters, KeySpec
 				ECParamSpec.getN());		// N	
 	}
 
+	
 	/**
 	 * Creates an instance of the ECKeyParam object with using the named curve
 	 * specified for the elliptic curve.
@@ -93,6 +94,7 @@ public class ECKeyParam implements CipherParameters, KeySpec
 				ECParamSpec.getN());		// N		
 	}
 	
+	
 	/**
 	 * @return The object's ECParameterSpec
 	 */
@@ -101,6 +103,7 @@ public class ECKeyParam implements CipherParameters, KeySpec
 		return ECParamSpec;
 	}
 	
+	
 	/**
 	 * @return The object's ECDomainParameters
 	 */
@@ -108,6 +111,7 @@ public class ECKeyParam implements CipherParameters, KeySpec
 	{
 		return ECDomainParam;
 	}
+	
 	
 	/**
 	 * Wrapper for getCurve()
@@ -118,6 +122,7 @@ public class ECKeyParam implements CipherParameters, KeySpec
 		return ECDomainParam.getCurve();
 	}
 	
+	
 	/**
 	 * Wrapper for getG()
 	 * @return the base point we are using for these domain parameters.
@@ -126,6 +131,7 @@ public class ECKeyParam implements CipherParameters, KeySpec
 	{
 		return ECDomainParam.getG();
 	}
+	
 	
 	/**
 	 * Wrapper for getH()
@@ -136,6 +142,7 @@ public class ECKeyParam implements CipherParameters, KeySpec
 		return ECDomainParam.getH();
 	}
 	
+	
 	/**
 	 * Wrapper for getN()
 	 * @return the order N of G
@@ -144,6 +151,7 @@ public class ECKeyParam implements CipherParameters, KeySpec
 	{
 		return ECDomainParam.getN();
 	}
+	
 	
 	/**
 	 * Wrapper for getSeed()

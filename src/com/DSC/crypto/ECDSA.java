@@ -52,6 +52,7 @@ public abstract class ECDSA
         return sign(priKey, hash(data));
     }
     
+    
     /**
      * 
      * @param pubKey
@@ -73,6 +74,7 @@ public abstract class ECDSA
         
         return verify(pubKey, hash(data), signature);
     }
+    
     
     /**
      * Signs the data for an authentication acknowledge and returns the signature
@@ -99,6 +101,7 @@ public abstract class ECDSA
         return sign(priKey, hash(data));
     }
     
+    
     /**
      * Verify the data for an authentication acknowledge and returns true/fals
      * @param pubKey The public key of the client that signed data
@@ -123,6 +126,7 @@ public abstract class ECDSA
         return verify(pubKey, hash(data), signature);
     }
     
+    
     /**
      * Signs the public key for a key exchange and returns the signature
      * @param priKey The private key used to sign the data
@@ -136,6 +140,7 @@ public abstract class ECDSA
         return signAuthRequest(priKey, pubKey, passphrase);
     }
     
+    
     /**
      * 
      * @param pubKey
@@ -148,6 +153,7 @@ public abstract class ECDSA
     {
         return verifyAuthRequest(pubKey, passphrase, signature);
     }
+    
     
     /**
      * 
@@ -172,6 +178,7 @@ public abstract class ECDSA
         
         return sign(priKey, hash(data));        
     }
+    
     
     /**
      * 
@@ -215,6 +222,7 @@ public abstract class ECDSA
         return hash;
     }
     
+    
     /**
      * Sign the data, return the signature
      * @param priKey
@@ -227,6 +235,7 @@ public abstract class ECDSA
         ecdsa.init(true, priKey);
         return ecdsa.generateSignature(data);
     }
+    
     
     /**
      * Verify the data, return true if the signature is valid, false otherwise

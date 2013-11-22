@@ -69,6 +69,7 @@ public abstract class Cipher
         return engine.processBlock(data, 0, data.length);
     }
     
+    
     /**
      * 
      * @param priKey
@@ -98,6 +99,7 @@ public abstract class Cipher
         return engine.processBlock(data, 0, data.length);
     }
     
+    
     /**
      * 
      * @param symmetricKey
@@ -119,6 +121,7 @@ public abstract class Cipher
         grain.processBytes(data, 0, data.length, cipherText, 0);
         return cipherText;
     }
+    
     
     /**
      * 
@@ -142,6 +145,7 @@ public abstract class Cipher
         return cipherText;
     }
     
+    
     /**
      * 
      * @param passphrase
@@ -163,6 +167,7 @@ public abstract class Cipher
        hmacBigInt[0] = new BigInteger(buf);
        return hmacBigInt;
     }
+    
     
     /**
      * 
