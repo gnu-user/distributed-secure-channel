@@ -54,6 +54,7 @@ public abstract class AbstractMessageFactory
         }
     }
 
+    
     /**
      * 
      * @param publicKey
@@ -72,6 +73,7 @@ public abstract class AbstractMessageFactory
         return new AuthRequest(publicKey, signature);
     }
 
+    
     /**
      * 
      * @param publicKey
@@ -92,6 +94,7 @@ public abstract class AbstractMessageFactory
         return new AuthAcknowledge(publicKey, (byte[])authKey, signature);
     }
 
+    
     /**
      * 
      * @param publicKey
@@ -110,6 +113,7 @@ public abstract class AbstractMessageFactory
         return new KeyExchange(publicKey, signature);
     }
 
+    
     /**
      * 
      * @param publicKey
@@ -129,6 +133,7 @@ public abstract class AbstractMessageFactory
         return new Key(publicKey, (byte[])symmetricKey, signature);
     }
 
+    
     /**
      * 
      * @param IV
