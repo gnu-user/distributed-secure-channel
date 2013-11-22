@@ -60,7 +60,7 @@ public class SecureChannel
     private static SendController sendController;
     
     /**
-     *
+     * Joins the JGroups channel specified
      * @throws Exception
      */
     private static void join(String name) throws Exception
@@ -73,7 +73,7 @@ public class SecureChannel
     
     
     /**
-     * Clear the terminal on initial load, and after connecting to JGroups
+     * Clears the terminal, used on initial load and after connecting to JGroups
      */
     private static void clearScreen()
     {
@@ -101,9 +101,7 @@ public class SecureChannel
      */
     private static void eventLoop() throws InterruptedException
     {
-        /* Clear the screen */
         clearScreen();
-        
         ProgramState.in = new BufferedReader(new InputStreamReader(System.in));
         
         while (true)
@@ -139,7 +137,6 @@ public class SecureChannel
 	                }
                 	else if ((quit = Quit.parse(line)) != null)
                 	{
-            			// Returns false if the state was null.
                 	    System.out.println(Colour.YELLOW + "Goodbye." + Colour.RESET);
             			quit.executeCommand();
  	                    break;
@@ -158,7 +155,6 @@ public class SecureChannel
                 			if (ProgramState.channel == null || !ProgramState.channel.equals(channelName))
                 			{
                 			    join(channelName);    
-                                /* Clear the screen, remove JGroups messages */
                                 clearScreen();
                                 
                 			    System.out.println(Colour.GREEN + "> Channel " + channelName + " created successfully." + Colour.RESET);
@@ -181,7 +177,6 @@ public class SecureChannel
                             if (ProgramState.channel == null || ! ProgramState.channel.equals(channelName))
                             {
                                 join(channelName);                                
-                                /* Clear the screen, remove JGroups messages */
                                 clearScreen();
                                 
                                 System.out.println(Colour.YELLOW + "> Joined channel: " + channelName + ", but not yet authenticated!" + Colour.RESET);
@@ -209,25 +204,24 @@ public class SecureChannel
                 		{                		
 	                		System.out.println("> Signing key...");	                		
 	                		System.out.println("> Requesting access...");
-	                		//TODO request access (with timeout)
 	                		
-		                    // Send out the request to join
+		                    /* Send out the request to join */
 		                    sendController.send(MessageType.AUTH_REQUEST, null, null);
 		                    
-		                    // Wait maximum of 20 seconds to see if authenticated
+		                    /* Wait maximum of 20 seconds to see if authenticated */
 		                    for (int i = 0; (! ProgramState.AUTHENTICATED && i < 20); ++i)
 		                    {
 		                        System.out.print(".");
 		                        Thread.sleep(1000);
 		                    }
 		                    
-		                    // Send key exchange request if authenticated
+		                    /* Send key exchange request if authenticated */
 		                    if (ProgramState.AUTHENTICATED)
 		                    {
 		                        System.out.println("\n> Requesting network key...");
 		                        sendController.send(MessageType.KEY_EXCHANGE, null, null);
 		                        
-		                        // Wait a maximum of 10 seconds to see if key received
+		                        /* Wait a maximum of 10 seconds to see if key received */
 		                        for (int i = 0; (! ProgramState.KEY_RECEIVED && i < 10); ++i)
 	                            {
 	                                System.out.print(".");
@@ -255,7 +249,7 @@ public class SecureChannel
                 }
                 else
                 {
-                    // Authentication prompt
+                    /* Authentication prompt */
                     if (ProgramState.AUTHENTICATION_DECISION)
                     {
                     	ProgramState.symbol.setInputReady(line);
@@ -290,35 +284,35 @@ public class SecureChannel
      */
     public static void main(String[] args) throws InterruptedException, IOException
     {
-        // Create their private & public keys
+        /* Create their private & public keys */
         ECKey key = new ECKey();
         key.init();
         ProgramState.publicKey = (ECPublicKeyParameters) key.getPublic();
         ProgramState.privateKey = (ECPrivateKeyParameters) key.getPrivate();
        
-        // Create the IV engine
+        /* Create the IV engine */
         byte[] seed = new byte[64]; // 512 bit seed 
         SecureRandom random = new SecureRandom();
         random.nextBytes(seed);
         ProgramState.IVEngine = new ISAACRandomGenerator(new ISAACEngine());
         ProgramState.IVEngine.init(seed);
         
-        // Create the blacklist and trusted contacts
+        /* Create the blacklist and trusted contacts */
         ProgramState.blacklist =  ConcurrentHashMultiset.create();
         ProgramState.trustedKeys = new ConcurrentHashMap<String, Address>();
         
-        // Set the time for the client accurately using a NTP server
+        /* Set the time for the client accurately using a NTP server */
         DateTimeUtils.setCurrentMillisOffset(getTimeOffset());
         ProgramState.fmt = DateTimeFormat.forPattern("HH:mm:ss");
         
-        // Set the default nick as anonymouse
+        /* Set the default nick as anonymous */
         ProgramState.nick = "anonymous";
         
-        // Initialize ISAACRandomGenerator, set ProgramState.IVEngine
+        /* Initialize ISAACRandomGenerator, set ProgramState.IVEngine */
         receiveController = new ReceiveController();
         sendController = new SendController();
 
-        // Start input event handler loop
+        /* Start input event handler loop */
         eventLoop();
     }
 }
