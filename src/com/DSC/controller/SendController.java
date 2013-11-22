@@ -80,6 +80,7 @@ public class SendController
         }
     }
 
+    
     /**
      * Handles sending authentication requests 
      * @throws Exception 
@@ -108,6 +109,7 @@ public class SendController
         ProgramState.AUTHENTICATION_REQUEST = true;
     }
 
+    
     /**
      * 
      * @param authKey
@@ -135,6 +137,7 @@ public class SendController
         ProgramState.channel.send(msg);
     }
 
+    
     /**
      * @throws Exception 
      * 
@@ -163,6 +166,7 @@ public class SendController
         ProgramState.KEY_EXCHANGE_REQUEST = true;
     }
 
+    
     /**
      * 
      * @param authKey
@@ -198,6 +202,7 @@ public class SendController
         ProgramState.channel.send(msg);
     }
 
+    
     /**
      * 
      * @param msg
@@ -205,24 +210,20 @@ public class SendController
      */
     private void encryptedMessageHandler(Object message, Address dest) throws Exception
     {
-        // Generate another unique IV
+        /* Generate another unique IV */
         byte[] IV = new byte[12];
         ProgramState.IVEngine.nextBytes(IV);
         
-        // Encrypt the message using symmetric key and IV with GRAIN
+        /* Encrypt the message using symmetric key and IV with GRAIN128 */
         byte[] encryptedMessage = Cipher.encryptMsg(
                 ProgramState.symmetricKey, 
                 IV, 
                 ((String) message).getBytes());
         
-		// Generate HMAC for the message
+		/* Generate HMAC for the message */
         BigInteger[] HMAC = Cipher.generateHMAC(ProgramState.passphrase, encryptedMessage);
         
-        //System.out.println("SENDING ENCRYPTED MESSAGE");
-        //System.out.println(new String(Hex.encode(encryptedMessage)));
-        //System.out.println(new String(Hex.encode(HMAC[0].toByteArray())));
-        
-		// Send the encrypted message with HMAC
+		/* Send the encrypted message with HMAC */
         SecureMessage secureMsg = AbstractMessageFactory.createMessage(
                 MessageType.ENCRYPTED_MESSAGE, 
                 null, 
