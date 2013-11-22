@@ -73,6 +73,17 @@ public class SecureChannel
     
     
     /**
+     * Clear the terminal on initial load, and after connecting to JGroups
+     */
+    private static void clearScreen()
+    {
+        System.out.print("\u001b[2J");
+        System.out.flush();
+        System.out.print(String.format("%c[%d;%df",0x1B,0,0));
+    }
+    
+    
+    /**
      * Gets the date time offset for the client using a NTP server
      * @throws IOException 
      */
@@ -90,6 +101,9 @@ public class SecureChannel
      */
     private static void eventLoop() throws InterruptedException
     {
+        /* Clear the screen */
+        clearScreen();
+        
         ProgramState.in = new BufferedReader(new InputStreamReader(System.in));
         
         while (true)
@@ -143,7 +157,10 @@ public class SecureChannel
                 		{
                 			if (ProgramState.channel == null || !ProgramState.channel.equals(channelName))
                 			{
-                			    join(channelName);                		
+                			    join(channelName);    
+                                /* Clear the screen, remove JGroups messages */
+                                clearScreen();
+                                
                 			    System.out.println(Colour.GREEN + "> Channel " + channelName + " created successfully." + Colour.RESET);
                 			}
                 		}
@@ -163,12 +180,16 @@ public class SecureChannel
                         {                            
                             if (ProgramState.channel == null || ! ProgramState.channel.equals(channelName))
                             {
-                                join(channelName);
+                                join(channelName);                                
+                                /* Clear the screen, remove JGroups messages */
+                                clearScreen();
+                                
+                                System.out.println(Colour.YELLOW + "> Joined channel: " + channelName + ", but not yet authenticated!" + Colour.RESET);
                             }
                         }
                         else
                         {
-                            System.out.println(Colour.RED + "> Invalid channel name" + Colour.GREEN);
+                            System.out.println(Colour.RED + "> Invalid channel name" + Colour.RESET);
                         }
                 	}
                 	else if ((request = Request.parse(line)) != null)
@@ -243,16 +264,6 @@ public class SecureChannel
                     {
                         String message = Colour.BLUE + ProgramState.fmt.print(DateTimeUtils.currentTimeMillis()) + Colour.RESET + 
                                 " " + ProgramState.nick + "> " + line;
-                        String delete = "";
-                        
-                        /* Remove the current line for prompt */
-                        for (int i = 0; i < new String(ProgramState.nick + "> " + line).length(); ++i)
-                        {
-                            delete += "\b";
-                        }
-                        
-                        /* Update the console to show the time message sent and send message */
-                        System.out.println(message);
                         
                         /* Send the encrypted message to each trusted contact */
                         for (Address dest : ProgramState.trustedKeys.values())
